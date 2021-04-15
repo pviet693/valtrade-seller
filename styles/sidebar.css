@@ -1,0 +1,20 @@
+#wrapper .sidebar {
+    background-color: #fff;
+    box-shadow: 1px 2px 3px rgb(0 0 0 / 10%);
+}
+
+.sidebar .nav .nav {
+    background-color: #fff;
+}
+
+.sidebar .nav > li > a:focus, .sidebar .nav > li > a.active {
+    background-color: #fff;
+}
+
+.sidebar .nav > li > a:hover, .sidebar .nav > li > a:focus, .sidebar .nav > li > a.active {
+    color: #00AAFF;
+}
+
+.sidebar .nav > li > a {
+    color: #566374;
+}

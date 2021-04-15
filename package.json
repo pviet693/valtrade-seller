@@ -1,0 +1,30 @@
+{
+  "name": "valtrade_seller",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:prod": "next start -p 80",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "classnames": "^2.2.6",
+    "js-cookie": "^2.2.1",
+    "moment": "^2.29.1",
+    "next": "10.1.2",
+    "nprogress": "^0.2.0",
+    "primeicons": "^4.1.0",
+    "primereact": "^6.2.1",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-loading": "^2.0.3",
+    "react-reactive-form": "^1.0.32",
+    "react-top-loading-bar": "^2.0.1",
+    "react-transition-group": "^4.4.1",
+    "sass": "^1.32.8",
+    "sweetalert2": "^10.16.2"
+  }
+}

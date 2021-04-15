@@ -1,0 +1,121 @@
+.register-container {
+    padding: 28px 25px 28px;
+    background-image: url(/static/assets/img/login-bg.jpg);
+    box-shadow: 0 4px 8px rgb(0 0 0 / 16%);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+    .register-content {
+        color: #000;
+        background: #fff;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+        font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+        height: auto;
+        width: 60%;
+        padding: 40px;
+        font-size: 14px;
+        margin: 0 auto;
+        
+        .header{
+            .logo{
+                width: 30%;
+                display: flex;
+                flex-direction:column;
+                justify-content: center;
+                margin-left: 35%;
+                img{
+                    width: 100%;
+                }
+            }
+            .lead{
+                font-size: 36px !important;
+                margin: 0 auto;
+                width: fit-content;
+                margin-bottom: 20px;
+                font-weight: 500;
+            }
+        }
+
+        .form-group {
+            .p-calendar {
+                height: 40px;
+                width: 100%;
+
+                .p-inputtext {
+                    font-size: 14px;
+                    padding: 6px 12px;
+                }
+
+                .p-button.p-button-icon-only {
+                    width: 40px;
+                }
+            }
+        }
+
+        .add-image-container {
+
+            .add-image-box {
+                width: 280px;
+                height: 160px;
+                border: 1px dashed #0795DF;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+
+                img {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+
+                i {
+                    cursor: pointer;
+                    font-size: 20px;
+                    top: 4px;
+                    right: 12px;
+                    color: red;
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    z-index: 1;
+                }
+
+                .add-image-circle {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    border: 1px dashed #0795DF;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+
+                    input {
+                        opacity: 0;
+                        cursor: pointer;
+                        z-index: 1;
+                        background: transparent;
+                    }
+
+                    i {
+                        font-size: 14px;
+                        color: #0795DF;
+                        cursor: pointer;
+                        position: absolute;
+                        top: calc(50% - 6px);
+                        left: calc(50% - 6px);
+                    }
+                }
+            }
+            
+            .invalid-image {
+                border-color: #dc3545 !important;
+            }
+        }
+    }
+}
