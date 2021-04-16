@@ -14,7 +14,6 @@ const Product = (props) => {
     const { products } = props;
     const [dateFrom, setDateFrom] = useState(null);
     const [dateTo, setDateTo] = useState(null);
-    // const [products, setProducts] = useState([]);
     const [dateFilter, setDateFilter] = useState(null);
     const dt = useRef(null);
 

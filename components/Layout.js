@@ -12,7 +12,7 @@ function Layout({ children }) {
     return (
         <div>
             {
-                !['/signin', '/register'].includes(router.pathname) &&
+                !['/signin', '/register', '/register-done'].includes(router.pathname) &&
                 <div id="wrapper">
                     <NavBarComponent />
                     <SlideBarComponent />
@@ -26,7 +26,7 @@ function Layout({ children }) {
                 </div>
             }
             {
-                ['/signin', '/register'].includes(router.pathname) &&
+                ['/signin', '/register', '/register-done'].includes(router.pathname) &&
                 <>
                     <main>{children}</main>
                 </>

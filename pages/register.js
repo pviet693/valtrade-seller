@@ -19,6 +19,7 @@ const Register = () => {
     const refLoadingBar = useRef(null);
     const [isLoading, setLoading] = useState(false);
     const [showError, setShowError] = useState(false);
+    const [link, setLink] = useState("");
     const [images, setImages] = useState({ identifiedFront: null, identifiedRear: null });
     const [urlImages, setUrlImages] = useState({ identifiedFront: '', identifiedRear: '' });
 
@@ -88,6 +89,7 @@ const Register = () => {
             formData.append("password", register.password);
             formData.append("email", register.email);
             formData.append("address", register.address);
+            formData.append("link", link);
 
             const res = await api.seller.postRegister(formData);
             setLoading(false);
@@ -95,7 +97,7 @@ const Register = () => {
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Đăng kí thành công.", 'success')
-                        .then(() => router.push(`/product`));
+                        .then(() => router.push(`/register-done`));
                 } else {
                     common.Toast("Đăng kí thất bại.", 'error');
                 }
@@ -146,8 +148,10 @@ const Register = () => {
     }
 
     useEffect(() => {
-        
-    });
+        if (typeof window !== 'undefined') {
+            setLink(`${window.location.protocol}//${window.location.host}`);
+        }
+    }, []);
 
 
     return (

@@ -17,8 +17,7 @@ const url = {
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
-        getList: () => `${baseUrl}/api/product/get`,
-        getList: () => `${baseUrl}/api/product/get`,
+        getList: () => `${baseUrl}/api/product/getBySeller`,
     }
 }
 
