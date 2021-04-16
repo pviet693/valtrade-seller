@@ -10,6 +10,8 @@ import * as common from './../utils/common.utils';
 import * as validate from './../utils/validate.utils';
 import classNames from 'classnames';
 import { RegisterModel } from './../models/register.model';
+import Cookie from 'js-cookie';
+import * as cryptojs from 'crypto-js';
 
 const Register = () => {
     const router = useRouter();
@@ -92,12 +94,16 @@ const Register = () => {
             formData.append("link", link);
 
             const res = await api.seller.postRegister(formData);
+            console.log(res);
             setLoading(false);
             refLoadingBar.current.complete();
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Đăng kí thành công.", 'success')
-                        .then(() => router.push(`/register-done`));
+                        .then(() => {
+                            Cookie.set('email_register', cryptojs.AES.encrypt(register.email, '1').toString(), {path: '/',expires: 30});
+                            router.push(`/register-done`);
+                        });
                 } else {
                     common.Toast("Đăng kí thất bại.", 'error');
                 }

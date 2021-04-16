@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "classnames": "^2.2.6",
+    "crypto-js": "^4.0.0",
     "js-cookie": "^2.2.1",
     "moment": "^2.29.1",
     "next": "10.1.2",
@@ -26,6 +27,7 @@
     "react-top-loading-bar": "^2.0.1",
     "react-transition-group": "^4.4.1",
     "sass": "^1.32.8",
-    "sweetalert2": "^10.16.2"
+    "sweetalert2": "^10.16.2",
+    "universal-cookie": "^4.0.4"
   }
 }
