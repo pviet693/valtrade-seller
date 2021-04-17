@@ -40,3 +40,5 @@ export const ConfirmDialog = (title, text) => {
 
     return swal.fire({})
 }
+
+export const KeyEncrypt = "2CE59986EC4F959F77E3EFD967B00FF689C469EC1013A561";

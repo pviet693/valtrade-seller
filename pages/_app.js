@@ -5,6 +5,8 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.css';
 import '../styles/register.scss';
 import '../styles/register-done.scss';
+import '../styles/verify.scss';
+import '../styles/verify-done.scss';
 // import 'primeflex/primeflex.css';
 import '../styles/sidebar.css';
 import '../styles/product/list-product.scss';

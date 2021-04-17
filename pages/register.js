@@ -91,21 +91,20 @@ const Register = () => {
             formData.append("password", register.password);
             formData.append("email", register.email);
             formData.append("address", register.address);
-            formData.append("link", link);
 
             const res = await api.seller.postRegister(formData);
-            console.log(res);
             setLoading(false);
             refLoadingBar.current.complete();
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Đăng kí thành công.", 'success')
                         .then(() => {
-                            Cookie.set('email_register', cryptojs.AES.encrypt(register.email, '1').toString(), {path: '/',expires: 30});
+                            Cookie.set('email_register', cryptojs.AES.encrypt(register.email, common.KeyEncrypt).toString(), {path: '/',expires: 30});
                             router.push(`/register-done`);
                         });
                 } else {
-                    common.Toast("Đăng kí thất bại.", 'error');
+                    const message = res.data.message || "Đăng kí thất bại.";
+                    common.Toast(message, 'error');
                 }
             }
         } catch(error) {
@@ -154,8 +153,12 @@ const Register = () => {
     }
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setLink(`${window.location.protocol}//${window.location.host}`);
+        if (Cookie.get("email_register")) {
+            router.push('/register-done');
+        } else {
+            if (typeof window !== 'undefined') {
+                setLink(`${window.location.protocol}//${window.location.host}`);
+            }
         }
     }, []);
 
@@ -304,7 +307,7 @@ const Register = () => {
                         </div>
 
                         <div className="form-group row">
-                            <label htmlFor="Identified" className="col-md-3 col-form-label">CMND</label>
+                            <label htmlFor="Identified" className="col-md-3 col-form-label">CMND/CCCD</label>
                             <div className="col-md-9 d-flex flex-row flex-wrap justify-content-between">
                                 <div className="d-flex flex-column add-image-container">
                                     <div className={classNames("add-image-box", { "invalid-image": validate.checkEmptyInput(urlImages.identifiedFront) && showError })}>
@@ -325,11 +328,11 @@ const Register = () => {
                                     {
                                         validate.checkEmptyInput(urlImages.identifiedFront) && showError &&
                                         <div className="invalid-feedback">
-                                            CMND mặt trước không được trống.
+                                            Mặt trước không được trống.
                                         </div>
                                     }
                                     <div className="text-center mt-2">
-                                        CMND mặt trước
+                                        Mặt trước
                                     </div>
                                 </div>
                                 <div className="d-flex flex-column add-image-container">
@@ -351,11 +354,11 @@ const Register = () => {
                                     {
                                         validate.checkEmptyInput(urlImages.identifiedRear) && showError &&
                                         <div className="invalid-feedback">
-                                            CMND mặt sau không được trống.
+                                            Mặt sau không được trống.
                                         </div>
                                     }
                                     <div className="text-center mt-2">
-                                        CMND mặt sau
+                                        Mặt sau
                                     </div>
                                 </div>
                             </div>
