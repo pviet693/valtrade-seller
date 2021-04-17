@@ -38,7 +38,6 @@ export default function SignIn() {
     }
 
     const onChangeInput = (e) => {
-        console.log(e.target.value);
         const { name, value } = e.target;
         setAuth({...auth, [name]: value});
     }
