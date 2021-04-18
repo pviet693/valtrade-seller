@@ -366,11 +366,11 @@ const Register = () => {
 
                         {
                             !isLoading && 
-                            <button type="submit" className="btn btn-primary btn-lg btn-block mt-6">ĐĂNG KÍ</button>
+                            <button type="submit" className="btn btn-primary btn-md btn-block mt-6">ĐĂNG KÍ</button>
                         }
                         {
                             isLoading &&
-                            <button type="button" className="btn btn-primary btn-lg btn-block" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>XỬ LÍ...</button>
+                            <button type="button" className="btn btn-primary btn-md btn-block" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>XỬ LÍ...</button>
                         }
 
                         <div className="policy-agreement d-flex justify-content-center mt-3">
@@ -382,6 +382,15 @@ const Register = () => {
                                 và
                                 <Link href="/">
                                     <a target="" rel="noopener noreferrer" className="mr-1 ml-1 text-primary">Chính Sách Bảo Mật của VALTRADE</a>
+                                </Link>
+                            </span>
+                        </div>
+
+                        <div className="bottom d-flex justify-content-center mt-4">
+                            <span className="helper-text d-flex">
+                                <p>Bạn đã có tài khoản?</p>
+                                <Link href="/signin">
+                                    <a style={{ color: '#00AAFF' }}>Đăng nhập</a>
                                 </Link>
                             </span>
                         </div>

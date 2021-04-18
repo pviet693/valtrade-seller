@@ -7,7 +7,7 @@
     "dev:3002": "next dev -p 3002",
     "build": "next build",
     "start": "next start",
-    "start:prod": "next start -p 80",
+    "start:prod": "next start -p 443",
     "export": "next build && next export"
   },
   "dependencies": {

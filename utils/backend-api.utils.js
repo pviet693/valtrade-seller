@@ -36,6 +36,12 @@ const api = {
         },
         postVerify: (body) => {
             return axios.post(url.seller.postVerify(), body);
+        },
+        postSignin: (body) => {
+            return axios.post(url.seller.postSignin(), body);
+        },
+        postValidate: (body) => {
+            return axios.post(url.seller.postValidate(), body);
         }
     },
     product: {

@@ -77,6 +77,7 @@ const Verify = (props) => {
                                     <li className="step-verify-row">Nhấn vào "Xem mã" để hiện thị mã QR Code.</li>
                                     <li className="step-verify-row">Dùng Authenticator quét mã QR Code.</li>
                                     <li className="step-verify-row">Lấy mã nhận được để tiến hành xác thực.</li>
+                                    <li className="step-verify-row">Giữ mã này để xác thực khi đăng nhập những lần sau.</li>
                                 </ol>
                             </div>
                             <div className="d-flex align-items-center justify-content-center">

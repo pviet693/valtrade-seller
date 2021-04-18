@@ -1,9 +1,16 @@
 import Link from 'next/link';
+import Cookie from 'js-cookie';
+import { useRouter } from 'next/router';
 
 const NavBar = () => {
-
+    const router = useRouter();
     const changeSearch = (e) => {
         
+    }
+
+    const logout = () => {
+        Cookie.remove("seller_token");
+        router.push('/signin');
     }
 
     return (
@@ -44,7 +51,7 @@ const NavBar = () => {
                                     <li><a href="#"><i className="lnr lnr-user"></i> <span>Tài khoản của tôi</span></a></li>
                                     <li><a href="#"><i className="lnr lnr-envelope"></i> <span>Tin nhắn</span></a></li>
                                     <li><a href="#"><i className="lnr lnr-cog"></i> <span>Cài đặt</span></a></li>
-                                    <li><a href="#"><i className="lnr lnr-exit"></i> <span>Đăng xuất</span></a></li>
+                                    <li onClick={logout}><a href="#"><i className="lnr lnr-exit"></i> <span>Đăng xuất</span></a></li>
                                 </ul>
                             </li>
                         </ul>

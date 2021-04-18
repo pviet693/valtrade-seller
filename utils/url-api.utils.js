@@ -9,6 +9,8 @@ const url = {
         postRegister: () => `${baseUrl}/api/seller/register`,
         getQrCode: () => `${baseUrl}/api/seller/qrcode?id=:id`,
         postVerify: () => `${baseUrl}/api/seller/verify`,
+        postSignin: () => `${baseUrl}/api/seller/login`,
+        postValidate: () => `${baseUrl}/api/seller/validate`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,

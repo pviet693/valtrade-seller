@@ -7,6 +7,7 @@ import '../styles/register.scss';
 import '../styles/register-done.scss';
 import '../styles/verify.scss';
 import '../styles/verify-done.scss';
+import '../styles/verify-account.scss';
 // import 'primeflex/primeflex.css';
 import '../styles/sidebar.css';
 import '../styles/product/list-product.scss';

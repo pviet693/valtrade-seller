@@ -30,11 +30,27 @@ export default function SignIn() {
 
         setLoading(true);
         refLoadingBar.current.continuousStart();
-        setTimeout(() => {
+        
+        try {
+            const res = await api.seller.postSignin(auth);
+            if (res.status === 200) {
+                if (res.data.code === 200) {
+                    common.Toast("Đăng nhập thành công.", 'success')
+                        .then(() => {
+                            router.push(`/verify-account?id=${res.data.id}`);
+                        })
+                } else {
+                    const message = res.data.message || "Đăng nhập thất bại.";
+                    common.Toast(message, 'error');
+                }
+            }
+        } catch(error) {
             setLoading(false);
             refLoadingBar.current.complete();
+            common.Toast(error, 'error');
+        }
             router.push('/product');
-        }, 2000);
+        
     }
 
     const onChangeInput = (e) => {
