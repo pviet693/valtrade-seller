@@ -67,6 +67,7 @@ export class PropertyDefault {
         this.sku = "";
         this.countProduct = 0;
         this.note = "";
+        this.brand = "";
         this.restWarrantyTime = 0;
     }
 }

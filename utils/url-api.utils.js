@@ -1,4 +1,4 @@
-const baseUrl = "http://3.142.74.42:5000";
+const baseUrl = "http://3.142.207.62:5000";
 
 const url = {
     category: {
@@ -15,6 +15,9 @@ const url = {
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
         getList: () => `${baseUrl}/api/product/getBySeller`,
+        delete: () => `${baseUrl}/api/product/delete/:id`,
+        getDetail: () => `${baseUrl}/api/product/detail/:id`,
+        putUpdate: () => `${baseUrl}/api/product/update/:id`,
     }
 }
 

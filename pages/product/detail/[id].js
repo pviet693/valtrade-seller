@@ -1,26 +1,29 @@
 import Head from 'next/head';
 import { Dropdown } from 'primereact/dropdown';
 import LoadingBar from "react-top-loading-bar";
-import { useRef, useState } from 'react';
-import api from './../../utils/backend-api.utils';
-import * as common from './../../utils/common.utils';
-import * as validate from './../../utils/validate.utils';
-import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefault } from './../../models/category.model';
+import { useRef, useState, useEffect } from 'react';
+import api from './../../../utils/backend-api.utils';
+import * as common from './../../../utils/common.utils';
+import * as validate from './../../../utils/validate.utils';
+import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefault } from './../../../models/category.model';
 import classNames from 'classnames';
+import cookie from "cookie";
+import { useRouter } from 'next/router';
 
-const AddNewProduct = (props) => {
-
+const ProductDetail = (props) => {
+    const router = useRouter();
     const [ghnChecked, setGHNChecked] = useState(false);
     const [ghtkChecked, setGHTKChecked] = useState(false);
     const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories } = props;
-    const [category, setCategory] = useState(null);
-    const [showProperty, setShowProperty] = useState(false);
+    const { categories, product, accept, imagesUrl, info, attr } = props;
+    const [category, setCategory] = useState(product.category);
+    const [showProperty, setShowProperty] = useState(true);
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(false);
-    const [attributes, setAttributes] = useState([]);
-    const [propertyDefault, setPropertyDefault] = useState(new PropertyDefault());
-    const [information, setInformation] = useState({});
+    const [isDeleteLoading, setDeleteLoading] = useState(false);
+    const [attributes, setAttributes] = useState(attr);
+    const [propertyDefault, setPropertyDefault] = useState(product);
+    const [information, setInformation] = useState(info);
     const inputCoverImage = useRef(null);
     const image1 = useRef(null);
     const image2 = useRef(null);
@@ -30,6 +33,7 @@ const AddNewProduct = (props) => {
     const image6 = useRef(null);
     const image7 = useRef(null);
     const image8 = useRef(null);
+    const [urlImages, setUrlImages] = useState(imagesUrl);
     const [images, setImages] = useState({
         coverImage: null,
         image1: null,
@@ -40,17 +44,6 @@ const AddNewProduct = (props) => {
         image6: null,
         image7: null,
         image8: null,
-    })
-    const [urlImages, setUrlImages] = useState({
-        coverImage: "",
-        image1: "",
-        image2: "",
-        image3: "",
-        image4: "",
-        image5: "",
-        image6: "",
-        image7: "",
-        image8: "",
     })
     const inputVideo = useRef(null);
     const refLoadingBar = useRef(null);
@@ -116,7 +109,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.coverImage = URL.createObjectURL(file);
+        tempUrl.coverImage.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -129,7 +122,7 @@ const AddNewProduct = (props) => {
         console.log(e.target.files.length);
     }
 
-    const createProduct = async (e) => {
+    const updateProduct = async (e) => {
         e.preventDefault();
         setShowError(true);
 
@@ -168,16 +161,17 @@ const AddNewProduct = (props) => {
                 formData.append("image", images.image8);
             formData.append("information", JSON.stringify(information))
 
-            const res = await api.product.postCreate(formData);
+            const res = await api.product.putUpdate(formData, propertyDefault.id);
 
             setLoading(false);
             refLoadingBar.current.complete();
 
             if (res.status === 200) {
                 if (res.data.code === 200) {
-                    common.Toast("Tạo sản phẩm thành công", "success");
+                    common.Toast("Cập nhật sản phẩm thành công", "success");
                 } else {
-                    common.Toast("Tạo sản phẩm thất bại", "error");
+                    const message = res.data.message || "Cập nhật sản phẩm thất bại";
+                    common.Toast(message, "error");
                 }
             }
         } catch (error) {
@@ -185,6 +179,37 @@ const AddNewProduct = (props) => {
             refLoadingBar.current.complete();
             common.Toast(error, 'error');
         }
+    }
+
+    const deleteProduct = () => {
+        common.ConfirmDialog('Xác nhận', 'Bạn muốn xóa sản phẩm này?')
+            .then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        setLoading(true);
+                        refLoadingBar.current.continuousStart();
+
+                        const res = await api.product.delete(propertyDefault.id);
+
+                        setLoading(false);
+                        refLoadingBar.current.complete();
+
+                        if (res.status === 200) {
+                            if (res.data.code === 200) {
+                                common.Toast('Xóa sản phẩm thành công.', 'success')
+                                    .then(() => router.push('/product'));
+                            } else {
+                                const message = res.data.message || 'Xóa sản phẩm thất bại.';
+                                common.Toast(message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        setLoading(false);
+                        refLoadingBar.current.complete();
+                        common.Toast(error, 'error');
+                    }
+                }
+            })
     }
 
     const addImage1 = () => {
@@ -200,7 +225,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image1 = URL.createObjectURL(file);
+        tempUrl.image1.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -218,7 +243,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image2 = URL.createObjectURL(file);
+        tempUrl.image2.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -236,7 +261,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image3 = URL.createObjectURL(file);
+        tempUrl.image3.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -254,7 +279,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image4 = URL.createObjectURL(file);
+        tempUrl.image4.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -272,7 +297,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image5 = URL.createObjectURL(file);
+        tempUrl.image5.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -290,7 +315,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image6 = URL.createObjectURL(file);
+        tempUrl.image6.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -308,7 +333,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image7 = URL.createObjectURL(file);
+        tempUrl.image7.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -326,7 +351,7 @@ const AddNewProduct = (props) => {
         setImages(tempImages);
 
         let tempUrl = urlImages;
-        tempUrl.image8 = URL.createObjectURL(file);
+        tempUrl.image8.url = URL.createObjectURL(file);
         setUrlImages({ ...tempUrl });
         URL.revokeObjectURL(file);
     }
@@ -337,7 +362,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.coverImage = "";
+        tempUrl.coverImage.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -347,7 +372,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image1 = "";
+        tempUrl.image1.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -357,7 +382,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image2 = "";
+        tempUrl.image2.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -367,7 +392,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image3 = "";
+        tempUrl.image3.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -377,13 +402,13 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image4 = "";
+        tempUrl.image4.url = "";
         setUrlImages({ ...tempUrl });
     }
 
     const deleteImage5 = () => {
         let tempImages = images;
-        tempImages.image5 = null;
+        tempImages.image5.url = null;
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
@@ -397,7 +422,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image6 = "";
+        tempUrl.image6.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -407,7 +432,7 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image7 = "";
+        tempUrl.image7.url = "";
         setUrlImages({ ...tempUrl });
     }
 
@@ -417,19 +442,53 @@ const AddNewProduct = (props) => {
         setImages({ ...tempImages });
 
         let tempUrl = urlImages;
-        tempUrl.image8 = "";
+        tempUrl.image8.url = "";
         setUrlImages({ ...tempUrl });
     }
 
+    // convert url to base64
+    const toDataURL = (url) => fetch(url)
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result)
+            reader.onerror = reject
+            reader.readAsDataURL(blob)
+        }))
+
+    // covert base64 to file
+    const dataURLtoFile = (dataUrl, filename) => {
+        let arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+    useEffect(() => {
+        let tempImages = images;
+        Object.keys(urlImages).forEach((key, idx) => {
+            if (urlImages[key].url !== "") {
+                toDataURL(urlImages[key].url)
+                    .then(dataUrl => {
+                        const fileData = dataURLtoFile(dataUrl, `image${idx}.png`);
+                        tempImages[key] = fileData;
+                    })
+            }
+        })
+        setImages(tempImages);
+    }, [])
+
     return (
-        <div className="product-add-new">
+        <div className="product-detail">
             <Head>
-                <title>Thêm mới sản phẩm</title>
+                <title>Chi tiết sản phẩm</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} onLoaderFinished={() => { }} />
-            <div className="product-add-new-container">
+            <div className="product-detail-container">
                 <div className="title">
-                    Thêm mới sản phẩm
+                    Chi tiết sản phẩm
                 </div>
                 <hr />
 
@@ -526,9 +585,9 @@ const AddNewProduct = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="note" className="col-sm-2 col-form-label">Lưu ý: </label>
                                 <div className="col-sm-6">
-                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note}></textarea>
+                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note || ""}></textarea>
                                     <div className="text-right mt-1">
-                                        {`${propertyDefault.note.length}/3000`}
+                                        {`${propertyDefault.note ? propertyDefault.note.length : 0}/3000`}
                                     </div>
                                 </div>
                             </div>
@@ -538,7 +597,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.coverImage === "" &&
+                                                urlImages.coverImage.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
                                                         <input type="file" accept="image/*" ref={inputCoverImage} onChange={selectCoverImage} />
@@ -547,9 +606,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.coverImage !== "" &&
+                                                urlImages.coverImage.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.coverImage} alt="Cover Image" />
+                                                    <img src={urlImages.coverImage.url} alt="Cover Image" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteCoverImage()}></i>
                                                 </>
                                             }
@@ -567,7 +626,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image1 === "" &&
+                                                urlImages.image1.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image1} onChange={selectImage1} />
@@ -576,9 +635,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image1 !== "" &&
+                                                urlImages.image1.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image1} alt="Image 1" />
+                                                    <img src={urlImages.image1.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage1()}></i>
                                                 </>
                                             }
@@ -589,22 +648,22 @@ const AddNewProduct = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                            {
-                                                urlImages.image2 === "" &&
-                                                <>
-                                                    <div className={classNames("add-image-circle")}>
-                                                        <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
-                                                        <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
-                                                    </div>
-                                                </>
-                                            }
-                                            {
-                                                urlImages.image2 !== "" &&
-                                                <>
-                                                    <img src={urlImages.image2} alt="Image 2" />
-                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
-                                                </>
-                                            }
+                                                {
+                                                    urlImages.image2.url === "" &&
+                                                    <>
+                                                        <div className={classNames("add-image-circle")}>
+                                                            <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
+                                                            <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
+                                                        </div>
+                                                    </>
+                                                }
+                                                {
+                                                    urlImages.image2.url !== "" &&
+                                                    <>
+                                                        <img src={urlImages.image2.url} alt="Image 2" />
+                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
+                                                    </>
+                                                }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 2
@@ -612,22 +671,22 @@ const AddNewProduct = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                            {
-                                                urlImages.image3 === "" &&
-                                                <>
-                                                    <div className={classNames("add-image-circle")}>
-                                                        <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
-                                                        <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
-                                                    </div>
-                                                </>
-                                            }
-                                            {
-                                                urlImages.image3 !== "" &&
-                                                <>
-                                                    <img src={urlImages.image3} alt="Image 1" />
-                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
-                                                </>
-                                            }
+                                                {
+                                                    urlImages.image3.url === "" &&
+                                                    <>
+                                                        <div className={classNames("add-image-circle")}>
+                                                            <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
+                                                            <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
+                                                        </div>
+                                                    </>
+                                                }
+                                                {
+                                                    urlImages.image3.url !== "" &&
+                                                    <>
+                                                        <img src={urlImages.image3.url} alt="Image 3" />
+                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
+                                                    </>
+                                                }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 3
@@ -636,7 +695,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image4 === "" &&
+                                                urlImages.image4.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image4} onChange={selectImage4} />
@@ -645,9 +704,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image4 !== "" &&
+                                                urlImages.image4.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image4} alt="Image 1" />
+                                                    <img src={urlImages.image4.url} alt="Image 2" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage4()}></i>
                                                 </>
                                             }
@@ -659,7 +718,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image5 === "" &&
+                                                urlImages.image5.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image5} onChange={selectImage5} />
@@ -668,9 +727,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image5 !== "" &&
+                                                urlImages.image5.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image5} alt="Image 1" />
+                                                    <img src={urlImages.image5.url} alt="Image 2" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage5()}></i>
                                                 </>
                                             }
@@ -682,7 +741,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image6 === "" &&
+                                                urlImages.image6.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image6} onChange={selectImage6} />
@@ -691,9 +750,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image6 !== "" &&
+                                                urlImages.image6.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image6} alt="Image 1" />
+                                                    <img src={urlImages.image6.url} alt="Image 2" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage6()}></i>
                                                 </>
                                             }
@@ -705,7 +764,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image7 === "" &&
+                                                urlImages.image7.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image7} onChange={selectImage7} />
@@ -714,9 +773,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image7 !== "" &&
+                                                urlImages.image7.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image7} alt="Image 1" />
+                                                    <img src={urlImages.image7.url} alt="Image 2" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage7()}></i>
                                                 </>
                                             }
@@ -728,7 +787,7 @@ const AddNewProduct = (props) => {
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
                                             {
-                                                urlImages.image8 === "" &&
+                                                urlImages.image8.url === "" &&
                                                 <>
                                                     <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={image8} onChange={selectImage8} />
@@ -737,9 +796,9 @@ const AddNewProduct = (props) => {
                                                 </>
                                             }
                                             {
-                                                urlImages.image8 !== "" &&
+                                                urlImages.image8.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image8} alt="Image 1" />
+                                                    <img src={urlImages.image8.url} alt="Image 2" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage8()}></i>
                                                 </>
                                             }
@@ -819,15 +878,27 @@ const AddNewProduct = (props) => {
                                     )
                                 })
                             }
-                            <div>
-                                {
-                                    isLoading &&
-                                    <button type="button" className="btn button-save" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
-                                }
-                                {
-                                    !isLoading &&
-                                    <button className="btn button-save" onClick={createProduct}>Lưu lại</button>
-                                }
+                            <div className="d-flex align-items-center">
+                                <div className="mr-3">
+                                    {
+                                        isDeleteLoading &&
+                                        <button type="button" className="btn button-delete" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
+                                    }
+                                    {
+                                        !isDeleteLoading &&
+                                        <button className="btn button-delete btn-danger" onClick={deleteProduct}>Xóa</button>
+                                    }
+                                </div>
+                                <div>
+                                    {
+                                        isLoading &&
+                                        <button type="button" className="btn button-save" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
+                                    }
+                                    {
+                                        !isLoading &&
+                                        <button className="btn button-save" onClick={updateProduct}>Cập nhật</button>
+                                    }
+                                </div>
                             </div>
                         </div>
                     }
@@ -838,25 +909,128 @@ const AddNewProduct = (props) => {
 }
 
 export async function getServerSideProps(ctx) {
-    let categories = [];
-    try {
-        const res = await api.category.getList();
+    const id = ctx.query.id;
+    const cookies = ctx.req.headers.cookie;
+    if (cookies) {
+        const token = cookie.parse(cookies).seller_token;
+        if (token) {
+            let categories = [];
+            let listAttribute = [];
+            let product = {
+                id: "",
+                name: "",
+                description: "",
+                category: "",
+                price: 0,
+                oldPrice: 0,
+                sku: "",
+                countProduct: 0,
+                note: "",
+                brand: "",
+                restWarrantyTime: 0,
+            }
+            let accept = false;
+            let urlImages = {
+                coverImage: { url: "", id: ""},
+                image1: { url: "", id: "" },
+                image2: { url: "", id: "" },
+                image3: { url: "", id: "" },
+                image4: { url: "", id: "" },
+                image5: { url: "", id: "" },
+                image6: { url: "", id: "" },
+                image7: { url: "", id: "" },
+                image8: { url: "", id: "" },
+            }
+            let information = {};
+            try {
+                const res = await api.category.getList();
 
-        if (res.status === 200) {
-            res.data.list.forEach(x => {
-                let categoryItem = { id: "", name: "" };
-                categoryItem.id = x.childId || "";
-                categoryItem.name = x.childName || "";
-                categories.push(categoryItem);
-            })
+                if (res.status === 200) {
+                    res.data.list.forEach(x => {
+                        let categoryItem = { id: "", name: "" };
+                        categoryItem.id = x.childId || "";
+                        categoryItem.name = x.childName || "";
+                        categories.push(categoryItem);
+                    })
+
+                    const resProduct = await api.product.getDetail(id, token);
+                    if (resProduct.status === 200) {
+                        if (resProduct.data.code === 200) {
+                            const result = resProduct.data.result;
+                            product.id = result._id || "";
+                            product.name = result.name || "";
+                            product.description = result.description || "";
+                            product.category = {
+                                id: result.categoryInfor ? (result.categoryInfor._id || "") : "",
+                                name: result.categoryInfor ? (result.categoryInfor.name || "") : ""
+                            };
+                            product.price = result.price;
+                            product.oldPrice = result.oldPrice;
+                            product.sku = result.sku
+                            product.countProduct = result.countProduct;
+                            product.note = result.note;
+                            product.brand = result.brand;
+                            product.restWarrantyTime = product.restWarrantyTime || 100;
+
+                            result.arrayImage.forEach((image, index) => {
+                                if (index === 0) {
+                                    urlImages.coverImage.url = image.url;
+                                    urlImages.coverImage.id = image.id;
+                                } else {
+                                    urlImages["image" + index].url = image.url;
+                                    urlImages["image" + index].id = image.id;
+                                }
+                            })
+
+                            accept = result.accept;
+
+                            information = result.information;
+
+                            const resAttr = await api.category.getDetail(product.category.id);
+                            if (resAttr.status === 200) {
+                                if (resAttr.data.code === 200) {
+                                    let listKey = Object.keys(resAttr.data.result.information);
+                                    ListProperties.forEach(x => {
+                                        if (listKey.includes(x.key)) {
+                                            listAttribute.push(x);
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.log(err.message);
+            }
+
+            return {
+                props: { 
+                    categories: categories, 
+                    product: product, 
+                    accept: accept,
+                    imagesUrl: urlImages,
+                    info: information,
+                    attr: listAttribute
+                }
+            }
         }
-    } catch (err) {
-        console.log(err.message);
-    }
-
-    return {
-        props: { categories: categories }
+        else {
+            return {
+                redirect: {
+                    destination: '/signin',
+                    permanent: false,
+                },
+            }
+        }
+    } else {
+        return {
+            redirect: {
+                destination: '/signin',
+                permanent: false,
+            },
+        }
     }
 }
 
-export default AddNewProduct;
+export default ProductDetail;

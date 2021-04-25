@@ -12,6 +12,7 @@ import '../styles/verify-account.scss';
 import '../styles/sidebar.css';
 import '../styles/product/list-product.scss';
 import '../styles/product/product-add-new.scss';
+import '../styles/product/product-detail.scss';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { DataProvider } from '../store/GlobalState';
