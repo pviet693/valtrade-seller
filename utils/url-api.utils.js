@@ -15,6 +15,9 @@ const url = {
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
         getList: () => `${baseUrl}/api/product/getBySeller`,
+        delete: () => `${baseUrl}/api/product/delete/:id`,
+        getDetail: () => `${baseUrl}/api/product/detail/:id`,
+        putUpdate: () => `${baseUrl}/api/product/update/:id`,
     }
 }
 
