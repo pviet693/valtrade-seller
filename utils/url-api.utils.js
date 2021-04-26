@@ -1,4 +1,4 @@
-const baseUrl = "http://3.142.74.42:5000";
+const baseUrl = "http://3.142.207.62:5000";
 
 const url = {
     category: {

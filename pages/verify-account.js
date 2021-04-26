@@ -8,8 +8,7 @@ import api from './../utils/backend-api.utils';
 import * as validate from './../utils/validate.utils';
 import * as common from './../utils/common.utils';
 
-const VerifyAccount = (props) => {
-
+const VerifyAccount = (props) => {          
     const router = useRouter();
     const { id } = props;
     const [formVerify, setFormVerify] = useState({ id: id, token: "" });

@@ -9,7 +9,6 @@ import * as common from './../utils/common.utils';
 import Cookie from 'js-cookie';
 
 const Verify = (props) => {
-
     const router = useRouter();
     const { id, qrCodeUrl } = props;
     const [formVerify, setFormVerify] = useState({ id: id, token: "" });
