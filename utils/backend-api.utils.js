@@ -105,6 +105,13 @@ const api = {
                 return axios.put(url.product.putUpdate().replace(':id', id), body, newConfig);
             }
         }
+    },
+    brand: {
+        getList: (tokenSeller) => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.brand.getList(), config);
+            }
+        } 
     } 
 };
 
