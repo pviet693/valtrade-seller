@@ -13,6 +13,7 @@ const NavBar = () => {
         router.push('/signin');
     }
 
+
     return (
         <>
             <nav className="navbar navbar-default navbar-fixed-top">
