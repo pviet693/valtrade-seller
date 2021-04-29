@@ -1,0 +1,61 @@
+.list-auction {
+    color:#000;
+    background:#fff;
+    font-family:-apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+    height:auto;
+    width: 100%;
+    padding: 20px;
+
+    label {
+        font-weight: 500;
+        color: #566374;
+    }
+
+    .custom-tabs-line.tabs-line-bottom {
+        hr {
+            margin: unset;
+        }
+
+        .form-group {
+            .p-calendar {
+                height: 34px;
+                width: 100%;
+
+                .p-inputtext {
+                    font-size: 14px;
+                    padding: 6px 12px;
+                }
+
+                .p-button.p-button-icon-only {
+                    width: 40px;
+                }
+            }
+        }
+
+        .table-list-auction {
+            margin-top: 40px;
+
+            .btn {
+                padding: 4px 8px;
+            }
+
+            .datatable-doc-demo .p-paginator .p-paginator-current {
+                margin-left: auto;
+            }
+
+            .p-component {
+                font-size: 14px !important;
+                width: 100%;
+                padding: 6px 8px;
+            }
+
+            .p-datatable-tbody {
+                tr {
+                    &:hover {
+                        background-color: #f9f9f9;
+                    }
+                }
+            }
+        }
+    }
+}

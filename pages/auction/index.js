@@ -13,10 +13,10 @@ import * as common from './../../utils/common.utils';
 import Moment from 'moment';
 Moment.locale('en');
 
-const Product = (props) => {
+const Auction = (props) => {
     const router = useRouter();
-    const { products } = props;
-    const [ listProducts, setListProducts ] = useState(products);
+    const { auctions } = props;
+    const [listAuctions, setListAuctions] = useState(auctions);
     const [dateFrom, setDateFrom] = useState(null);
     const [dateTo, setDateTo] = useState(null);
     const [dateFilter, setDateFilter] = useState(null);
@@ -26,7 +26,7 @@ const Product = (props) => {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="d-flex align-items-center justify-content-center">
-                <button type="button" className="btn btn-danger mr-2" onClick={() => deleteProduct(rowData.id)}><i className="fa fa-trash-o" aria-hidden></i> Xóa</button>
+                <button type="button" className="btn btn-danger mr-2" onClick={() => deleteAuction(rowData.id)}><i className="fa fa-trash-o" aria-hidden></i> Xóa</button>
                 <button type="button" className="btn btn-primary" onClick={() => viewDetail(rowData.id)}><i className="fa fa-edit" aria-hidden></i> Sửa</button>
             </div>
         );
@@ -65,7 +65,7 @@ const Product = (props) => {
         setDateFilter(event.value);
     }
 
-    const deleteProduct = async (id) => {
+    const deleteAuction = async (id) => {
         common.ConfirmDialog('Xác nhận', 'Bạn muốn xóa sản phẩm này?')
             .then(async (result) => {
                 if (result.isConfirmed) {
@@ -78,14 +78,11 @@ const Product = (props) => {
 
                         if (res.status === 200) {
                             if (res.data.code === 200) {
-                                common.Toast('Xóa sản phẩm thành công.', 'success')
-                                    .then(() => {
-                                        let newListProducts = listProducts.filter(x => x.id !== id);
-                                        setListProducts([...newListProducts]);
-                                    })
+                                let newListAuctions = auctions.filter(x => x.id !== id);
+                                setListAuctions(newListAuctions);
+                                common.Toast('Xóa sản phẩm thành công.', 'success');
                             } else {
-                                const message = res.data.message || 'Xóa sản phẩm thất bại.';
-                                common.Toast(message, 'error');
+                                common.Toast('Xóa sản phẩm thất bại.', 'error');
                             }
                         }
                     } catch (error) {
@@ -97,14 +94,14 @@ const Product = (props) => {
     }
 
     const viewDetail = (id) => {
-        router.push(`/product/detail/${id}`);
+        router.push(`/auction/detail/${id}`);
     }
 
     const dateFilterElement = renderDateFilter();
     const actionFilterElement = renderActionFilter();
 
     return (
-        <div className="list-product">
+        <div className="list-auction">
             <Head>
                 <title>
                     Tất cả sản phẩm
@@ -113,22 +110,22 @@ const Product = (props) => {
             <LoadingBar color="#00ac96" ref={refLoadingBar} />
             <div className="custom-tabs-line tabs-line-bottom">
                 <ul className="nav" role="tablist">
-                    <li className="active"><a href="#all-product" role="tab" data-toggle="tab">Tất cả <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#on-sale-product" role="tab" data-toggle="tab">Đang bán <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#sold-product" role="tab" data-toggle="tab">Đã bán <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#out-stock-product" role="tab" data-toggle="tab">Hết hàng <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#hidden-product" role="tab" data-toggle="tab">Tạm ẩn <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#lock-product" role="tab" data-toggle="tab">Tạm khóa <span className="badge bg-danger">7</span></a></li>
+                    <li className="active"><a href="#all-auction" role="tab" data-toggle="tab">Tất cả <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#on-sale-auction" role="tab" data-toggle="tab">Đang bán <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#sold-auction" role="tab" data-toggle="tab">Đã bán <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#out-stock-auction" role="tab" data-toggle="tab">Hết hàng <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#hidden-auction" role="tab" data-toggle="tab">Tạm ẩn <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#lock-auction" role="tab" data-toggle="tab">Tạm khóa <span className="badge bg-danger">7</span></a></li>
                 </ul>
                 <hr />
                 <div className="tab-content">
-                    {/* All product */}
-                    <div className="tab-pane fade in active" id="all-product">
+                    {/* All auction */}
+                    <div className="tab-pane fade in active" id="all-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -156,8 +153,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -171,13 +168,13 @@ const Product = (props) => {
                         </div>
                     </div>
 
-                    {/* On sale product */}
-                    <div className="tab-pane fade in" id="on-sale-product">
+                    {/* On sale auction */}
+                    <div className="tab-pane fade in" id="on-sale-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -205,8 +202,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -220,13 +217,13 @@ const Product = (props) => {
                         </div>
                     </div>
 
-                    {/* Sold product */}
-                    <div className="tab-pane fade in" id="sold-product">
+                    {/* Sold auction */}
+                    <div className="tab-pane fade in" id="sold-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -254,8 +251,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -269,13 +266,13 @@ const Product = (props) => {
                         </div>
                     </div>
 
-                    {/* Out of stock product */}
-                    <div className="tab-pane fade in" id="out-stock-product">
+                    {/* Out of stock auction */}
+                    <div className="tab-pane fade in" id="out-stock-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -303,8 +300,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -318,13 +315,13 @@ const Product = (props) => {
                         </div>
                     </div>
 
-                    {/* Hidden product */}
-                    <div className="tab-pane fade in" id="hidden-product">
+                    {/* Hidden auction */}
+                    <div className="tab-pane fade in" id="hidden-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -352,8 +349,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -367,13 +364,13 @@ const Product = (props) => {
                         </div>
                     </div>
 
-                    {/* Lock product */}
-                    <div className="tab-pane fade in" id="lock-product">
+                    {/* Lock auction */}
+                    <div className="tab-pane fade in" id="lock-auction">
                         <form>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
+                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
-                                    <input type="text" className="form-control" id="name-product" placeholder="Tên sản phẩm" name="name" />
+                                    <input type="text" className="form-control" id="name-auction" placeholder="Tên sản phẩm" name="name" />
                                 </div>
                                 <div className="col-sm-4">
                                     <input type="submit" className="btn btn-primary w-25" value="Tìm kiếm" />
@@ -401,8 +398,8 @@ const Product = (props) => {
                             </div>
                         </form>
 
-                        <div className="table-list-product">
-                            <DataTable value={listProducts}
+                        <div className="table-list-auction">
+                            <DataTable value={listAuctions}
                                 ref={dt}
                                 paginator rows={10} emptyMessage="Không có sản phẩm" currentPageReportTemplate="{first} đến {last} của {totalRecords}"
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -423,7 +420,7 @@ const Product = (props) => {
 }
 
 export async function getServerSideProps(ctx) {
-    let products = [];
+    let auctions = [];
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
@@ -445,7 +442,7 @@ export async function getServerSideProps(ctx) {
                             obj.category = x.categoryInfor.name;
                             obj.date = Moment(x.timePost).format("DD/MM/yyyy");
                             obj.price = x.price;
-                            products.push(obj);
+                            auctions.push(obj);
                         })
                     }
                 }
@@ -454,7 +451,7 @@ export async function getServerSideProps(ctx) {
             }
 
             return {
-                props: { products: products }
+                props: { auctions: auctions }
             }
         } else {
             return {
@@ -474,4 +471,4 @@ export async function getServerSideProps(ctx) {
     }
 }
 
-export default Product;
+export default Auction;

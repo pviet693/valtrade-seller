@@ -12,9 +12,9 @@ const SideBar = () => {
     const activeLink = (link) => { return router.pathname === link; }
 
     useEffect(() => {
-        if (activeCollapse('/product') || activeCollapse('/')) {
-            productRef.current.click();
-        }
+        // if (activeCollapse('/product')) {
+        //     productRef.current.click();
+        // }
     }, []);
 
     return (
@@ -37,9 +37,9 @@ const SideBar = () => {
                                 <a href="#auction" data-toggle="collapse" className="collapsed"><i className="lnr lnr-clock"></i> <span>Quản lí đấu giá</span> <i className="icon-submenu lnr lnr-chevron-right"></i></a>
                                 <div id="auction" className="collapse ">
                                     <ul className="nav">
-                                        <li><a href="page-profile.html" className="">Tất cả sản phẩm</a></li>
-                                        <li><a href="page-login.html" className="">Thêm sản phẩm</a></li>
-                                        <li><a href="page-lockscreen.html" className="">Sản phẩm vi phạm</a></li>
+                                        <li><Link href="/auction"><a className={classNames({ "active": activeLink('/auction') })}>Tất cả sản phẩm</a></Link></li>
+                                        <li><Link href="/auction/add-new-auction"><a className={classNames({ "active": activeLink('/auction/add-new-auction') })}>Thêm sản phẩm</a></Link></li>
+                                        <li><Link href="/auction/auction-report"><a className={classNames({ "active": activeLink('/auction/auction-report') })}>Sản phẩm vi phạm</a></Link></li>
                                     </ul>
                                 </div>
                             </li>

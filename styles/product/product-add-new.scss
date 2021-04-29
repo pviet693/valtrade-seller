@@ -186,5 +186,19 @@
                 height: 40px;
             }
         }
+
+        .input-brand {
+
+            .p-dropdown {
+                width: 100%;
+                height: 40px;
+                align-items: center;
+                font-size: 14px;
+
+                .p-inputtext {
+                    font-size: unset;
+                }
+            }
+        }
     }
 }

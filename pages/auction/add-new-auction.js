@@ -5,18 +5,16 @@ import { useRef, useState } from 'react';
 import api from './../../utils/backend-api.utils';
 import * as common from './../../utils/common.utils';
 import * as validate from './../../utils/validate.utils';
-import cookie from 'cookie';
 import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefault } from './../../models/category.model';
 import classNames from 'classnames';
 
-const AddNewProduct = (props) => {
+const AddNewAuction = (props) => {
 
     const [ghnChecked, setGHNChecked] = useState(false);
     const [ghtkChecked, setGHTKChecked] = useState(false);
     const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories, brands } = props;
+    const { categories } = props;
     const [category, setCategory] = useState(null);
-    const [brand, setBrand] = useState(null);
     const [showProperty, setShowProperty] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(false);
@@ -105,11 +103,6 @@ const AddNewProduct = (props) => {
         }
     }
 
-    const onChangeBrand = (e) => {
-        const { value } = e.target;
-        setBrand(value);
-    }
-
     const addCoverImage = () => {
         inputCoverImage.current.click();
     }
@@ -136,7 +129,7 @@ const AddNewProduct = (props) => {
         console.log(e.target.files.length);
     }
 
-    const createProduct = async (e) => {
+    const createAuction = async (e) => {
         e.preventDefault();
         setShowError(true);
 
@@ -154,7 +147,7 @@ const AddNewProduct = (props) => {
             formData.append("restWarrantyTime", propertyDefault.restWarrantyTime);
             formData.append("countProduct", propertyDefault.countProduct);
             formData.append("note", propertyDefault.note);
-            formData.append("brandId", brand.id);
+            formData.append("brand", propertyDefault.brand);
             if (images.coverImage)
                 formData.append("image", images.coverImage);
             if (images.image1)
@@ -174,7 +167,7 @@ const AddNewProduct = (props) => {
             if (images.image8)
                 formData.append("image", images.image8);
             formData.append("information", JSON.stringify(information))
-            
+
             const res = await api.product.postCreate(formData);
 
             setLoading(false);
@@ -184,8 +177,7 @@ const AddNewProduct = (props) => {
                 if (res.data.code === 200) {
                     common.Toast("Tạo sản phẩm thành công", "success");
                 } else {
-                    const message = res.data.message || "Tạo sản phẩm thất bại";
-                    common.Toast(message, "error");
+                    common.Toast("Tạo sản phẩm thất bại", "error");
                 }
             }
         } catch (error) {
@@ -430,12 +422,12 @@ const AddNewProduct = (props) => {
     }
 
     return (
-        <div className="product-add-new">
+        <div className="auction-add-new">
             <Head>
                 <title>Thêm mới sản phẩm</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} onLoaderFinished={() => { }} />
-            <div className="product-add-new-container">
+            <div className="auction-add-new-container">
                 <div className="title">
                     Thêm mới sản phẩm
                 </div>
@@ -504,10 +496,10 @@ const AddNewProduct = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="form-group row align-items-center d-flex input-brand">
-                                <label htmlFor="brand" className="col-sm-2 col-form-label">Chọn thương hiệu: </label>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="brand" className="col-sm-2 col-form-label">Thương hiệu: </label>
                                 <div className="col-sm-6">
-                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand" />
+                                    <input className="form-control" placeholder="Nhập thương hiệu" type="text" name="brand" id="brand" onChange={changeInput} value={propertyDefault.brand} />
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
@@ -541,7 +533,7 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh: </label>
+                                <label htmlFor="image" className="col-sm-2 col-form-label">Hình ảnh: </label>
                                 <div className="col-sm-6 d-flex flex-row flex-wrap">
                                     <div className="d-flex flex-column add-image-container">
                                         <div className="add-image-box">
@@ -759,7 +751,7 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Video: </label>
+                                <label htmlFor="video" className="col-sm-2 col-form-label">Video: </label>
                                 <div className="d-flex flex-row flex-wrap align-items-center">
                                     <div className="d-flex flex-column add-video-container">
                                         <div className="add-video-box">
@@ -779,7 +771,7 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
+                                <label htmlFor="delivery" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
                                     <div className="d-flex flex-row align-items-center row mb-3">
                                         <div className="col-sm-4">Giao hàng nhanh</div>
@@ -834,7 +826,7 @@ const AddNewProduct = (props) => {
                                 }
                                 {
                                     !isLoading &&
-                                    <button className="btn button-save" onClick={createProduct}>Lưu lại</button>
+                                    <button className="btn button-save" onClick={createAuction}>Lưu lại</button>
                                 }
                             </div>
                         </div>
@@ -847,61 +839,24 @@ const AddNewProduct = (props) => {
 
 export async function getServerSideProps(ctx) {
     let categories = [];
-    let brands = [];
-    const cookies = ctx.req.headers.cookie;
-    if (cookies) {
-        const token = cookie.parse(cookies).seller_token;
-        if (token) {
-            try {
-                const res = await api.category.getList();
+    try {
+        const res = await api.category.getList();
 
-                if (res.status === 200) {
-                    res.data.list.forEach(x => {
-                        let categoryItem = { id: "", name: "" };
-                        categoryItem.id = x.childId || "";
-                        categoryItem.name = x.childName || "";
-                        categories.push(categoryItem);
-                    })
-                }
-
-                const resBrand = await api.brand.getList(token);
-
-                if (resBrand.status === 200) {
-                    if (resBrand.data.code === 200) {
-                        const result = resBrand.data.result;
-                        result.forEach(x => {
-                            let brand = {
-                                id: "",
-                                name: ""
-                            }
-                            brand.id = x._id || "";
-                            brand.name = x.name || "";
-                            brands.push(brand);
-                        })
-                    }
-                }
-                return {
-                    props: { categories: categories, brands: brands }
-                }
-            } catch (err) {
-                console.log(err.message);
-            }
-        } else {
-            return {
-                redirect: {
-                    destination: '/signin',
-                    permanent: false,
-                },
-            }
+        if (res.status === 200) {
+            res.data.list.forEach(x => {
+                let categoryItem = { id: "", name: "" };
+                categoryItem.id = x.childId || "";
+                categoryItem.name = x.childName || "";
+                categories.push(categoryItem);
+            })
         }
-    } else {
-        return {
-            redirect: {
-                destination: '/signin',
-                permanent: false,
-            },
-        }
+    } catch (err) {
+        console.log(err.message);
+    }
+
+    return {
+        props: { categories: categories }
     }
 }
 
-export default AddNewProduct;
+export default AddNewAuction;

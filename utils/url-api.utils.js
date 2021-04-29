@@ -18,6 +18,9 @@ const url = {
         delete: () => `${baseUrl}/api/product/delete/:id`,
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
+    },
+    brand: {
+        getList: () => `${baseUrl}/api/brand/get`,
     }
 }
 
