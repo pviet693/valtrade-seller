@@ -16,6 +16,7 @@ import '../styles/product/product-detail.scss';
 import '../styles/auction/list-auction.scss';
 import '../styles/auction/auction-add-new.scss';
 import '../styles/auction/auction-detail.scss';
+import '../styles/shipping/shipping-setting.scss';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { DataProvider } from '../store/GlobalState';
