@@ -73,8 +73,25 @@
                 }
             }
 
+            .p-calendar {
+                width: 100%;
+                height: 40px;
+
+                .p-button.p-button-icon-only {
+                    width: 40px;
+                }
+            }
+
+            .p-inputnumber { 
+                width: 100%;
+            }
+
             .add-image-container {
                 margin-right: 20px;
+
+                .invalid-image {
+                    border-color: #f44336 !important;
+                }
 
                 .add-image-box {
                     width: 120px;
