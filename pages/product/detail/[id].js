@@ -200,7 +200,8 @@ const ProductDetail = (props) => {
 
             if (res.status === 200) {
                 if (res.data.code === 200) {
-                    common.Toast("Cập nhật sản phẩm thành công", "success");
+                    common.Toast("Cập nhật sản phẩm thành công", "success")
+                        .then(() => router.push('/product'));
                 } else {
                     const message = res.data.message || "Cập nhật sản phẩm thất bại";
                     common.Toast(message, "error");
@@ -510,6 +511,10 @@ const ProductDetail = (props) => {
             }
         })
         setImages(tempImages);
+
+        let temp = propertyDefault;
+        temp.restWarrantyTime = new Date(propertyDefault.restWarrantyTime);
+        setPropertyDefault(temp);
     }, [])
 
     return (
@@ -664,7 +669,7 @@ const ProductDetail = (props) => {
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Ngày hết hạn bảo hành: </label>
                                 <div className="col-sm-6">
-                                    <Calendar id="date" value={propertyDefault.restWarrantyTime} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime"
+                                    <Calendar id="date" value={new Date(propertyDefault.restWarrantyTime)} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime"
                                         className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError })}
                                     />
                                     {
@@ -1029,7 +1034,7 @@ export async function getServerSideProps(ctx) {
                 sku: "",
                 countProduct: 0,
                 note: "",
-                restWarrantyTime: 0,
+                restWarrantyTime: "",
             }
             let accept = false;
             let urlImages = {
@@ -1073,8 +1078,7 @@ export async function getServerSideProps(ctx) {
                             product.sku = result.sku;
                             product.countProduct = result.countProduct;
                             product.note = result.note || "";
-                            product.restWarrantyTime = (new Date(result.restWarrantyTime)).toDateString() || (new Date()).toDateString();
-
+                            product.restWarrantyTime = result.restWarrantyTime;
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;
