@@ -94,6 +94,8 @@ const ShippingSetting = ({ provinces, settings }) => {
             refLoadingBar.current.continuousStart();
 
             let ghn = null;
+            let ghtk = null;
+            let local = null;
             
             if (province && district && ward && street) {
                 ghn = !disableGHN 
@@ -122,15 +124,22 @@ const ShippingSetting = ({ provinces, settings }) => {
                 return;
             }
 
+            if (disableGHTK) ghtk = { isChoose: activeGHTK };
+
+            if (addressLocal) local = { isChoose: activeLocal };
+
             let body = {};
 
             if (ghn) { body["ghn"] = ghn; }
+            if (ghtk) { body["ghtk"] = ghtk; }
+            if (local) { body["local"] = local; }
 
-            const res = api.deliverySetting.postSetting(body);
+            const res = await api.deliverySetting.postSetting(body);
             setLoading(false);
             refLoadingBar.current.complete();
             if (res.status === 200) {
-                common.Toast('Lưu thành công', 'success');
+                common.Toast('Lưu thành công', 'success')
+                    .then(() => setDisableGHN(true));
             }
         } catch(error) {
             setLoading(false);
@@ -145,6 +154,8 @@ const ShippingSetting = ({ provinces, settings }) => {
             refLoadingBar.current.continuousStart();
 
             let ghtk = null;
+            let ghn = null;
+            let local = null;
 
             if (provinceGHTK && districtGHTK && wardGHTK && streetGHTK) {
                 ghtk = !disableGHTK 
@@ -164,15 +175,22 @@ const ShippingSetting = ({ provinces, settings }) => {
                 return;
             }
 
+            if (disableGHN) ghn = { isChoose: activeGHN === 1 ? true : false };
+
+            if (addressLocal) local = { isChoose: activeLocal === 1 ? true : false };
+
             let body = {};
 
             if (ghtk) { body["ghtk"] = ghtk; }
+            if (ghn) { body["ghn"] = ghn; }
+            if (local) { body["local"] = local; }
 
-            const res = api.deliverySetting.postSetting(body);
+            const res = await api.deliverySetting.postSetting(body);
             setLoadingGHTK(false);
             refLoadingBar.current.complete();
             if (res.status === 200) {
-                common.Toast('Lưu thành công.', 'success');
+                common.Toast('Lưu thành công.', 'success')
+                    .then(() => setDisableGHTK(true));
             }
         } catch (error) {
             setLoadingGHTK(false);
@@ -186,6 +204,8 @@ const ShippingSetting = ({ provinces, settings }) => {
             setLoadingLocal(true);
             refLoadingBar.current.continuousStart();
 
+            let ghn = null;
+            let ghtk = null;
             let local = null;
 
             if (addressLocal) {
@@ -197,11 +217,17 @@ const ShippingSetting = ({ provinces, settings }) => {
                 return;
             }
 
+            if (disableGHN) ghn = { isChoose: activeGHN === 1 ? true : false };
+
+            if (disableGHTK) ghtk = { isChoose: activeGHTK === 1 ? true : false };
+
             let body = {};
 
+            if (ghtk) { body["ghtk"] = ghtk; }
+            if (ghn) { body["ghn"] = ghn; }
             if (local) { body["local"] = local; }
 
-            const res = api.deliverySetting.postSetting(body);
+            const res = await api.deliverySetting.postSetting(body);
             setLoadingLocal(false);
             refLoadingBar.current.complete();
             if (res.status === 200) {
@@ -237,17 +263,11 @@ const ShippingSetting = ({ provinces, settings }) => {
 
             if (settings.ghtk) {
                 try {
-                    const resDistrict = await api.ghn.getDistrict(settings.ghtk.province.province_id);
-                    setDistrictsGHTK([...resDistrict.data.data]);
-
-                    const resWard = await api.ghn.getWard(settings.ghtk.district.district_id);
-                    setWardsGHTK([...resWard.data.data]);
-
-                    setProvinceGHTK(provinces.filter(x => x.ProvinceID === settings.ghtk.province.province_id)[0]);
-                    setDistrictGHTK(resDistrict.data.data.filter(x => x.DistrictID === settings.ghtk.district.district_id)[0]);
-                    setWardGHTK(resWard.data.data.filter(x => x.WardCode === settings.ghn.ward.ward_code)[0]);
-                    setStreetGHTK(settings.ghn.street);
-                    setActiveGHTK(settings.ghn.isChoose ? 1 : 0);
+                    setProvinceGHTK(settings.ghtk.province.pick_province);
+                    setDistrictGHTK(settings.ghtk.province.pick_district);
+                    setWardGHTK(settings.ghtk.province.pick_ward);
+                    setStreetGHTK(settings.ghtk.street);
+                    setActiveGHTK(settings.ghtk.isChoose ? 1 : 0);
                 } catch (error) {
                     common.Toast(error, 'error');
                 }
@@ -299,58 +319,109 @@ const ShippingSetting = ({ provinces, settings }) => {
                                 }
                             }}
                         />
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="province-ghn">Tỉnh/Thành phố: </label>
-                            <Dropdown
-                                id="province-ghn"
-                                value={province}
-                                onChange={onChangeProvince}
-                                options={provinces}
-                                optionLabel="ProvinceName"
-                                filter showClear
-                                filterBy="ProvinceName"
-                                placeholder="Chọn tỉnh/thành phố"
-                                disabled={disableGHN}
-                            />
-                        </div>
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="district-ghn">Quận/Huyện: </label>
-                            <Dropdown
-                                id="district-ghn"
-                                value={district}
-                                onChange={onChangeDistrict}
-                                options={districts}
-                                optionLabel="DistrictName"
-                                filter showClear
-                                filterBy="DistrictName"
-                                placeholder="Chọn quận/huyện"
-                                disabled={!province || disableGHN}
-                            />
-                        </div>
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="ward-ghn">Phường/Xã: </label>
-                            <Dropdown
-                                id="ward-ghn"
-                                value={ward}
-                                onChange={e => setWard(e.value)}
-                                options={wards}
-                                optionLabel="WardName"
-                                filter showClear
-                                filterBy="WardName"
-                                placeholder="Chọn phường/xã"
-                                disabled={!district || disableGHN}
-                            />
-                        </div>
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="street">Tòa nhà, tên đường: </label>
-                            <input 
-                                type="text" className="form-control" 
-                                id="street" name="street_name" 
-                                placeholder="Tòa nhà, Tên đường..." 
-                                value={street} onChange={e => setStreet(e.target.value)}
-                                disabled={disableGHN}
-                                />
-                        </div>
+
+                        {
+                            disableGHN
+                                ?
+                                <>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="province-ghn">Tỉnh/Thành phố: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="province-ghn" name="province-ghn"
+                                            placeholder="Tỉnh/thành phố"
+                                            defaultValue={province.ProvinceName}
+                                            disabled={disableGHN}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="district-ghn">Quận/Huyện: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="district-ghn" name="district-ghn"
+                                            placeholder="Quận/huyện"
+                                            defaultValue={district.DistrictName}
+                                            disabled={disableGHN}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="ward-ghn">Phường/Xã: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="ward-ghn" name="ward-ghn"
+                                            placeholder="Phường/xã"
+                                            defaultValue={ward.WardName}
+                                            disabled={disableGHN}
+                                        />
+                                    </div>
+
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="street-ghn">Tòa nhà, tên đường: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="street-ghn" name="street_name"
+                                            placeholder="Tòa nhà, Tên đường..."
+                                            defaultValue={street}
+                                            disabled={disableGHN}
+                                        />
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="province-ghn">Tỉnh/Thành phố: </label>
+                                        <Dropdown
+                                            id="province-ghn"
+                                            value={province}
+                                            onChange={onChangeProvince}
+                                            options={provinces}
+                                            optionLabel="ProvinceName"
+                                            filter showClear
+                                            filterBy="ProvinceName"
+                                            placeholder="Chọn tỉnh/thành phố"
+                                            disabled={disableGHN}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="district-ghn">Quận/Huyện: </label>
+                                        <Dropdown
+                                            id="district-ghn"
+                                            value={district}
+                                            onChange={onChangeDistrict}
+                                            options={districts}
+                                            optionLabel="DistrictName"
+                                            filter showClear
+                                            filterBy="DistrictName"
+                                            placeholder="Chọn quận/huyện"
+                                            disabled={!province || disableGHN}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="ward-ghn">Phường/Xã: </label>
+                                        <Dropdown
+                                            id="ward-ghn"
+                                            value={ward}
+                                            onChange={e => setWard(e.value)}
+                                            options={wards}
+                                            optionLabel="WardName"
+                                            filter showClear
+                                            filterBy="WardName"
+                                            placeholder="Chọn phường/xã"
+                                            disabled={!district || disableGHN}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="street">Tòa nhà, tên đường: </label>
+                                        <input 
+                                            type="text" className="form-control" 
+                                            id="street" name="street_name" 
+                                            placeholder="Tòa nhà, Tên đường..." 
+                                            value={street} onChange={e => setStreet(e.target.value)}
+                                            disabled={disableGHN}
+                                            />
+                                    </div>
+                                </>
+                        }
 
                         <div className="setting-row-button">
                             <button className="btn btn-cancel mr-4" onClick={initValue}>Hủy bỏ</button>
@@ -369,7 +440,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                     <div className="setting-row-header">Giao hàng nhanh</div>
                     <div className="setting-row-container">
                         <Switch
-                            id="active-ghn"
+                            id="active-ghtk"
                             onChange={setActiveGHTK}
                             value={activeGHTK}
                             styles={{
@@ -387,59 +458,109 @@ const ShippingSetting = ({ provinces, settings }) => {
                                 }
                             }}
                         />
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="province-ghn">Tỉnh/Thành phố: </label>
-                            <Dropdown
-                                id="province-ghn"
-                                value={provinceGHTK}
-                                onChange={onChangeProvinceGHTK}
-                                options={provinces}
-                                optionLabel="ProvinceName"
-                                filter showClear
-                                filterBy="ProvinceName"
-                                placeholder="Chọn tỉnh/thành phố"
-                                disabled={disableGHTK}
-                            />
-                        </div>
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="district-ghn">Quận/Huyện: </label>
-                            <Dropdown
-                                id="district-ghn"
-                                value={districtGHTK}
-                                onChange={onChangeDistrictGHTK}
-                                options={districtsGHTK}
-                                optionLabel="DistrictName"
-                                filter showClear
-                                filterBy="DistrictName"
-                                placeholder="Chọn quận/huyện"
-                                disabled={!provinceGHTK || disableGHTK}
-                            />
-                        </div>
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="ward-ghn">Phường/Xã: </label>
-                            <Dropdown
-                                id="ward-ghn"
-                                value={wardGHTK}
-                                onChange={e => setWardGHTK(e.value)}
-                                options={wardsGHTK}
-                                optionLabel="WardName"
-                                filter showClear
-                                filterBy="WardName"
-                                placeholder="Chọn phường/xã"
-                                disabled={!districtGHTK || disableGHTK}
-                            />
-                        </div>
+                        {
+                            disableGHTK
+                            ?
+                                <>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="province-ghtk">Tỉnh/Thành phố: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="province-ghtk" name="province-ghtk"
+                                            placeholder="Tỉnh/thành phố"
+                                            defaultValue={provinceGHTK.ProvinceName || provinceGHTK}
+                                            disabled={disableGHTK}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="district-ghtk">Quận/Huyện: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="district-ghtk" name="district-ghtk"
+                                            placeholder="Quận/huyện"
+                                            defaultValue={districtGHTK.DistrictName || districtGHTK}
+                                            disabled={disableGHTK}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="ward-ghtk">Phường/Xã: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="ward-ghtk" name="ward-ghtk"
+                                            placeholder="Phường/xã"
+                                            defaultValue={wardGHTK.WardName || wardGHTK}
+                                            disabled={disableGHTK}
+                                        />
+                                    </div>
 
-                        <div className="setting-row">
-                            <label className="row-title" htmlFor="street">Tòa nhà, tên đường: </label>
-                            <input 
-                                type="text" className="form-control" 
-                                id="street" name="street_name" 
-                                placeholder="Tòa nhà, Tên đường..." 
-                                value={streetGHTK} onChange={e => setStreetGHTK(e.target.value)}
-                                disabled={disableGHTK}
-                                />
-                        </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="street-ghtk">Tòa nhà, tên đường: </label>
+                                        <input
+                                            type="text" className="form-control"
+                                            id="street-ghtk" name="street_name"
+                                            placeholder="Tòa nhà, Tên đường..."
+                                            value={streetGHTK} onChange={e => setStreetGHTK(e.target.value)}
+                                            disabled={disableGHTK}
+                                        />
+                                    </div>
+                                </>
+                            :
+                                <>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="province-ghtk">Tỉnh/Thành phố: </label>
+                                        <Dropdown
+                                            id="province-ghtk"
+                                            value={provinceGHTK}
+                                            onChange={onChangeProvinceGHTK}
+                                            options={provinces}
+                                            optionLabel="ProvinceName"
+                                            filter showClear
+                                            filterBy="ProvinceName"
+                                            placeholder="Chọn tỉnh/thành phố"
+                                            disabled={disableGHTK}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="district-ghtk">Quận/Huyện: </label>
+                                        <Dropdown
+                                            id="district-ghtk"
+                                            value={districtGHTK}
+                                            onChange={onChangeDistrictGHTK}
+                                            options={districtsGHTK}
+                                            optionLabel="DistrictName"
+                                            filter showClear
+                                            filterBy="DistrictName"
+                                            placeholder="Chọn quận/huyện"
+                                            disabled={!provinceGHTK || disableGHTK}
+                                        />
+                                    </div>
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="ward-ghtk">Phường/Xã: </label>
+                                        <Dropdown
+                                            id="ward-ghtk"
+                                            value={wardGHTK}
+                                            onChange={e => setWardGHTK(e.value)}
+                                            options={wardsGHTK}
+                                            optionLabel="WardName"
+                                            filter showClear
+                                            filterBy="WardName"
+                                            placeholder="Chọn phường/xã"
+                                            disabled={!districtGHTK || disableGHTK}
+                                        />
+                                    </div>
+
+                                    <div className="setting-row">
+                                        <label className="row-title" htmlFor="street-ghtk">Tòa nhà, tên đường: </label>
+                                        <input 
+                                            type="text" className="form-control" 
+                                            id="street-ghtk" name="street_name"
+                                            placeholder="Tòa nhà, Tên đường..." 
+                                            value={streetGHTK} onChange={e => setStreetGHTK(e.target.value)}
+                                            disabled={disableGHTK}
+                                            />
+                                    </div>
+                                </>
+                        }
 
                         <div className="setting-row-button">
                             <button className="btn btn-cancel mr-4" onClick={initValue}>Hủy bỏ</button>
