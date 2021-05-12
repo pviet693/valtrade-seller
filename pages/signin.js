@@ -33,6 +33,8 @@ export default function SignIn() {
         
         try {
             const res = await api.seller.postSignin(auth);
+            setLoading(false);
+            refLoadingBar.current.complete();
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Đăng nhập thành công.", 'success')
