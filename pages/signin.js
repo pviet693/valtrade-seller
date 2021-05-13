@@ -39,9 +39,16 @@ export default function SignIn() {
                         .then(() => {
                             router.push(`/verify-account?id=${res.data.id}`);
                         })
-                } else {
+                } else if (res.data.code === 300) {
+                    common.Toast("Email không tồn tại", 'error')
+                    setLoading(false);
+                    refLoadingBar.current.complete();
+                } 
+                else {
                     const message = res.data.message || "Đăng nhập thất bại.";
-                    common.Toast(message, 'error');
+                    common.Toast(message, 'error')
+                    setLoading(false);
+                    refLoadingBar.current.complete();
                 }
             }
         } catch(error) {
