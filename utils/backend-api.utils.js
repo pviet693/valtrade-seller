@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookie from 'js-cookie';
 import url from './url-api.utils';
+import * as common from './common.utils';
 
 let token = Cookie.get('seller_token');
 
@@ -112,7 +113,54 @@ const api = {
                 return axios.get(url.brand.getList(), config);
             }
         } 
-    } 
+    },
+    deliverySetting: {
+        postSetting: (body) => {
+            if (isEnable()) {
+                return axios.post(url.deliverySetting.postSetting(), body, config);
+            }
+        },
+        getListShip: (tokenSeller) => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.deliverySetting.getListShip(), config);
+            }
+        }
+    },
+    ghn: {
+        getProvince: () => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': `${common.tokenGHN}`,
+                },
+            }
+            return axios.get(url.ghn.getProvince(), newConfig);
+        },
+        getDistrict: (provinceId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`,
+                },
+                params: {
+                    province_id: provinceId
+                }
+            }
+            return axios.get(url.ghn.getDistrict(), newConfig);
+        },
+        getWard: (districtId) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `${common.tokenGHN}`
+                },
+                params: {
+                    district_id: districtId
+                }
+            }
+            return axios.get(url.ghn.getWard(), newConfig);
+        },
+    }
 };
 
 export default api;

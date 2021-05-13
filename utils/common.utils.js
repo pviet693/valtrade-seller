@@ -41,4 +41,15 @@ export const ConfirmDialog = (title, text) => {
     return swal.fire({})
 }
 
+//
 export const KeyEncrypt = "2CE59986EC4F959F77E3EFD967B00FF689C469EC1013A561";
+
+// api ghn
+export const tokenGHN = "c76acf0e-9a1d-11eb-8be2-c21e19fc6803";
+
+export const ghnShopId = "78801"
+
+// api ghtk
+export const tokenGHTK = "9411aDE81fE602c4f3bE48Cd043f0D5c09893254"
+
+export const ghtkShopName = "S19125017 - Valtrade"

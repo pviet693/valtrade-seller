@@ -9,6 +9,8 @@ import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefau
 import classNames from 'classnames';
 import cookie from "cookie";
 import { useRouter } from 'next/router';
+import { InputNumber } from 'primereact/inputnumber';
+import { Calendar } from 'primereact/calendar';
 
 const ProductDetail = (props) => {
     const router = useRouter();
@@ -132,6 +134,30 @@ const ProductDetail = (props) => {
         e.preventDefault();
         setShowError(true);
 
+        if (validate.checkEmptyInput(propertyDefault.name)
+            || propertyDefault.name.length > 200
+            || validate.checkEmptyInput(category.name)
+            || validate.checkEmptyInput(propertyDefault.description)
+            || propertyDefault.description.length > 3000
+            || validate.checkEmptyInput(propertyDefault.price)
+            || validate.checkEmptyInput(propertyDefault.oldPrice)
+            || validate.checkEmptyInput(propertyDefault.sku)
+            || validate.checkEmptyInput(propertyDefault.restWarrantyTime)
+            || validate.checkEmptyInput(propertyDefault.countProduct)
+            || validate.checkEmptyInput(brand ? brand.name : "")
+            || validate.checkEmptyInput(urlImages.coverImage)
+        ) {
+            return;
+        }
+
+        let checkValidate = true;
+        Object.keys(information).forEach(key => {
+            if (validate.checkEmptyInput(information[key]))
+                checkValidate = false;
+        })
+
+        if (!checkValidate) return;
+
         setLoading(true);
         refLoadingBar.current.continuousStart();
 
@@ -174,7 +200,8 @@ const ProductDetail = (props) => {
 
             if (res.status === 200) {
                 if (res.data.code === 200) {
-                    common.Toast("Cập nhật sản phẩm thành công", "success");
+                    common.Toast("Cập nhật sản phẩm thành công", "success")
+                        .then(() => router.push('/product'));
                 } else {
                     const message = res.data.message || "Cập nhật sản phẩm thất bại";
                     common.Toast(message, "error");
@@ -192,12 +219,12 @@ const ProductDetail = (props) => {
             .then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        setLoading(true);
+                        setDeleteLoading(true);
                         refLoadingBar.current.continuousStart();
 
                         const res = await api.product.delete(propertyDefault.id);
 
-                        setLoading(false);
+                        setDeleteLoading(false);
                         refLoadingBar.current.complete();
 
                         if (res.status === 200) {
@@ -210,7 +237,7 @@ const ProductDetail = (props) => {
                             }
                         }
                     } catch (error) {
-                        setLoading(false);
+                        setDeleteLoading(false);
                         refLoadingBar.current.complete();
                         common.Toast(error, 'error');
                     }
@@ -484,6 +511,10 @@ const ProductDetail = (props) => {
             }
         })
         setImages(tempImages);
+
+        let temp = propertyDefault;
+        temp.restWarrantyTime = new Date(propertyDefault.restWarrantyTime);
+        setPropertyDefault(temp);
     }, [])
 
     return (
@@ -497,15 +528,27 @@ const ProductDetail = (props) => {
                     Chi tiết sản phẩm
                 </div>
                 <hr />
-
+                
                 <div className="form-input">
                     <div className="form-group row align-items-center d-flex">
                         <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm: </label>
                         <div className="col-sm-6">
                             <div className="input-group">
-                                <input className="form-control" name="name" id="name" placeholder="Nhập tên sản phẩm" type="text" onChange={changeInput} value={propertyDefault.name} />
+                                <input className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.name) || (propertyDefault.name.length > 200)) && showError })} name="name" id="name" placeholder="Nhập tên sản phẩm" type="text" onChange={changeInput} value={propertyDefault.name} />
                                 <span className="input-group-addon">{`${propertyDefault.name.length}/200`}</span>
                             </div>
+                            {
+                                validate.checkEmptyInput(propertyDefault.name) && showError &&
+                                <div className="invalid-feedback text-left">
+                                    Tên sản phẩm không được trống.
+                                </div>
+                            }
+                            {
+                                (propertyDefault.name.length > 200) && showError &&
+                                <div className="invalid-feedback text-left">
+                                    Tên sản phẩm không dài quá 200 kí tự.
+                                </div>
+                            }
                         </div>
                     </div>
                     <div className="select-category">
@@ -516,7 +559,15 @@ const ProductDetail = (props) => {
                             <div className="align-items-center d-flex input-category row">
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
-                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category" />
+                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(category.name) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Danh mục không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="select-category-result row">
@@ -536,7 +587,19 @@ const ProductDetail = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="description" className="col-sm-2 col-form-label">Mô tả sản phẩm </label>
                                 <div className="col-sm-6">
-                                    <textarea className="form-control" placeholder="Mô tả sản phẩm" rows="8" name="description" id="description" onChange={changeInput} value={propertyDefault.description}></textarea>
+                                    <textarea className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.description) || (propertyDefault.description.length > 3000)) && showError })} placeholder="Mô tả sản phẩm" rows="8" name="description" id="description" onChange={changeInput} value={propertyDefault.description}></textarea>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.description) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Mô tả không được trống.
+                                        </div>
+                                    }
+                                    {
+                                        (propertyDefault.description.length > 3000) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Mô tả không dài quá 3000 kí tự.
+                                        </div>
+                                    }
                                     <div className="text-right mt-1">
                                         {`${propertyDefault.description.length}/3000`}
                                     </div>
@@ -547,53 +610,96 @@ const ProductDetail = (props) => {
                                 <label htmlFor="price" className="col-sm-2 col-form-label">Giá bán: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập giá sản phẩm" type="number" name="price" id="price" onChange={changeInput} value={propertyDefault.price} />
+                                        <InputNumber name="price" id="price" placeholder="Nhập giá sản phẩm" onValueChange={(e) => changeInput(e)} value={propertyDefault.price}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.price) && showError })}
+                                        />
                                         <span className="input-group-addon">vnđ</span>
                                     </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.price) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Giá bán không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua gốc: </label>
+                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua ban đầu: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập giá mua gốc" type="number" name="oldPrice" id="oldPrice" onChange={changeInput} value={propertyDefault.oldPrice} />
+                                        <InputNumber name="oldPrice" id="oldPrice" placeholder="Nhập giá mua ban đầu" onValueChange={(e) => changeInput(e)} value={propertyDefault.oldPrice}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.oldPrice) && showError })}
+                                        />
                                         <span className="input-group-addon">vnđ</span>
                                     </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.oldPrice) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Giá bán không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex input-brand">
                                 <label htmlFor="brand" className="col-sm-2 col-form-label">Chọn thương hiệu: </label>
                                 <div className="col-sm-6">
-                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand" />
+                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(brand ? brand.name : "") && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(brand ? brand.name : "") && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Thương hiệu không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="sku" className="col-sm-2 col-form-label">SKU: </label>
                                 <div className="col-sm-6">
-                                    <input className="form-control" placeholder="Nhập sku" type="text" name="sku" id="=sku" onChange={changeInput} value={propertyDefault.sku} />
+                                    <input className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(propertyDefault.sku) && showError })} placeholder="Nhập sku" type="text" name="sku" id="=sku" onChange={changeInput} value={propertyDefault.sku} />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.sku) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            SKU không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Thời gian bảo hành còn lại: </label>
+                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Ngày hết hạn bảo hành: </label>
                                 <div className="col-sm-6">
-                                    <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập sku" type="text" name="restWarrantyTime" id="restWarrantyTime" onChange={changeInput} value={propertyDefault.restWarrantyTime} />
-                                        <span className="input-group-addon">ngày</span>
-                                    </div>
+                                    <Calendar id="date" value={new Date(propertyDefault.restWarrantyTime)} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            SKU không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="countProduct" className="col-sm-2 col-form-label">Số lượng: </label>
                                 <div className="col-sm-6">
-                                    <input className="form-control" placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct} />
+                                    <input placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct}
+                                        className={classNames('form-control', { 'is-invalid': validate.checkEmptyInput(propertyDefault.countProduct) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.countProduct) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Số lượng lớn hơn 0.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row">
                                 <label htmlFor="note" className="col-sm-2 col-form-label">Lưu ý: </label>
                                 <div className="col-sm-6">
-                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note || ""}></textarea>
+                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note}></textarea>
                                     <div className="text-right mt-1">
-                                        {`${propertyDefault.note ? propertyDefault.note.length : 0}/3000`}
+                                        {`${propertyDefault.note.length}/3000`}
                                     </div>
                                 </div>
                             </div>
@@ -601,7 +707,7 @@ const ProductDetail = (props) => {
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh: </label>
                                 <div className="col-sm-6 d-flex flex-row flex-wrap">
                                     <div className="d-flex flex-column add-image-container">
-                                        <div className="add-image-box">
+                                        <div className={classNames("add-image-box", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
                                             {
                                                 urlImages.coverImage.url === "" &&
                                                 <>
@@ -619,12 +725,6 @@ const ProductDetail = (props) => {
                                                 </>
                                             }
                                         </div>
-                                        {
-                                            validate.checkEmptyInput(urlImages.coverImage) && showError &&
-                                            <div className="invalid-feedback">
-                                                Hình ảnh bìa không được trống.
-                                            </div>
-                                        }
                                         <div className="text-center mt-2">
                                             Hình ảnh bìa
                                         </div>
@@ -654,22 +754,22 @@ const ProductDetail = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                                {
-                                                    urlImages.image2.url === "" &&
-                                                    <>
-                                                        <div className={classNames("add-image-circle")}>
-                                                            <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
-                                                            <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
-                                                        </div>
-                                                    </>
-                                                }
-                                                {
-                                                    urlImages.image2.url !== "" &&
-                                                    <>
-                                                        <img src={urlImages.image2.url} alt="Image 2" />
-                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
-                                                    </>
-                                                }
+                                            {
+                                                urlImages.image2.url === "" &&
+                                                <>
+                                                    <div className={classNames("add-image-circle")}>
+                                                        <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
+                                                        <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
+                                                    </div>
+                                                </>
+                                            }
+                                            {
+                                                urlImages.image2.url !== "" &&
+                                                <>
+                                                    <img src={urlImages.image2.url} alt="Image 2" />
+                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
+                                                </>
+                                            }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 2
@@ -677,22 +777,22 @@ const ProductDetail = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                                {
-                                                    urlImages.image3.url === "" &&
-                                                    <>
-                                                        <div className={classNames("add-image-circle")}>
-                                                            <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
-                                                            <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
-                                                        </div>
-                                                    </>
-                                                }
-                                                {
-                                                    urlImages.image3.url !== "" &&
-                                                    <>
-                                                        <img src={urlImages.image3.url} alt="Image 3" />
-                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
-                                                    </>
-                                                }
+                                            {
+                                                urlImages.image3.url === "" &&
+                                                <>
+                                                    <div className={classNames("add-image-circle")}>
+                                                        <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
+                                                        <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
+                                                    </div>
+                                                </>
+                                            }
+                                            {
+                                                urlImages.image3.url !== "" &&
+                                                <>
+                                                    <img src={urlImages.image3.url} alt="Image 1" />
+                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
+                                                </>
+                                            }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 3
@@ -712,7 +812,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image4.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image4.url} alt="Image 2" />
+                                                    <img src={urlImages.image4.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage4()}></i>
                                                 </>
                                             }
@@ -735,7 +835,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image5.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image5.url} alt="Image 2" />
+                                                    <img src={urlImages.image5.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage5()}></i>
                                                 </>
                                             }
@@ -758,7 +858,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image6.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image6.url} alt="Image 2" />
+                                                    <img src={urlImages.image6.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage6()}></i>
                                                 </>
                                             }
@@ -781,7 +881,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image7.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image7.url} alt="Image 2" />
+                                                    <img src={urlImages.image7.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage7()}></i>
                                                 </>
                                             }
@@ -804,7 +904,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image8.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image8.url} alt="Image 2" />
+                                                    <img src={urlImages.image8.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage8()}></i>
                                                 </>
                                             }
@@ -888,7 +988,7 @@ const ProductDetail = (props) => {
                                 <div className="mr-3">
                                     {
                                         isDeleteLoading &&
-                                        <button type="button" className="btn button-delete" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
+                                        <button type="button" className="btn button-delete btn-danger" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
                                     }
                                     {
                                         !isDeleteLoading &&
@@ -934,7 +1034,7 @@ export async function getServerSideProps(ctx) {
                 sku: "",
                 countProduct: 0,
                 note: "",
-                restWarrantyTime: 0,
+                restWarrantyTime: "",
             }
             let accept = false;
             let urlImages = {
@@ -977,9 +1077,8 @@ export async function getServerSideProps(ctx) {
                             product.oldPrice = result.oldPrice;
                             product.sku = result.sku;
                             product.countProduct = result.countProduct;
-                            product.note = result.note;
-                            product.restWarrantyTime = result.restWarrantyTime || 100;
-
+                            product.note = result.note || "";
+                            product.restWarrantyTime = result.restWarrantyTime;
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;

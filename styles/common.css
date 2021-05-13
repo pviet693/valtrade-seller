@@ -3058,3 +3058,30 @@ label.fancy-checkbox {
   color: #fff !important;
   border-radius: 4px !important;
 }
+
+.css-xjimrv-Switch {
+  width: 44px !important;
+  height: 24px !important;
+}
+
+.css-xjimrv-Switch .css-iro74s-Switch {
+  border-radius: 12px;
+  background-color: gray;
+}
+
+.css-xjimrv-Switch .css-zjngzk-Switch {
+  border-radius: 12px;
+}
+
+.css-xjimrv-Switch .css-19a995p-Switch {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+}
+
+.css-xjimrv-Switch .css-gpmoc7-Switch {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  left: 21px;
+}

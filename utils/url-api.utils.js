@@ -21,6 +21,15 @@ const url = {
     },
     brand: {
         getList: () => `${baseUrl}/api/brand/get`,
+    },
+    deliverySetting: {
+        postSetting: () => `${baseUrl}/api/store/changeSettingStore`,
+        getListShip: () => `${baseUrl}/api/store/getListShip`
+    },
+    ghn: {
+        getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
+        getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
+        getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
     }
 }
 

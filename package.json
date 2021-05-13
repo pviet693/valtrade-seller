@@ -7,7 +7,7 @@
     "dev:3002": "next dev -p 3002",
     "build": "next build",
     "start": "next start",
-    "start:prod": "next start -p 443",
+    "start:prod": "next start -p 80",
     "export": "next build && next export"
   },
   "dependencies": {
@@ -24,9 +24,9 @@
     "primereact": "^6.2.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-input-switch": "^2.2.2",
     "react-loading": "^2.0.3",
-    "react-reactive-form": "^1.0.32",
-    "react-switch": "^6.0.0",
+    "react-reactive-form": "^1.0.31",
     "react-top-loading-bar": "^2.0.1",
     "react-transition-group": "^4.4.1",
     "sass": "^1.32.8",
