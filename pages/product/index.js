@@ -430,7 +430,6 @@ export async function getServerSideProps(ctx) {
         if (token) {
             try {
                 const res = await api.product.getList(token);
-                console.log(res.data.result);
                 if (res.status === 200) {
                     if (res.data.code === 200) {
                         res.data.result.forEach(x => {

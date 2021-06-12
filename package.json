@@ -18,7 +18,7 @@
     "crypto-js": "^4.0.0",
     "js-cookie": "^2.2.1",
     "moment": "^2.29.1",
-    "next": "10.1.2",
+    "next": "^10.2.0",
     "nprogress": "^0.2.0",
     "primeicons": "^4.1.0",
     "primereact": "^6.2.1",

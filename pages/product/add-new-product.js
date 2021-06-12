@@ -8,11 +8,13 @@ import * as common from './../../utils/common.utils';
 import * as validate from './../../utils/validate.utils';
 import cookie from 'cookie';
 import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefault } from './../../models/category.model';
+import {ListDelivery} from './../../models/product.model';
 import classNames from 'classnames';
 import { InputNumber } from 'primereact/inputnumber';
+import { useRouter } from 'next/router';
 
 const AddNewProduct = (props) => {
-
+    const router = useRouter();
     const [ghnChecked, setGHNChecked] = useState(false);
     const [ghtkChecked, setGHTKChecked] = useState(false);
     const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
@@ -58,6 +60,7 @@ const AddNewProduct = (props) => {
     })
     const inputVideo = useRef(null);
     const refLoadingBar = useRef(null);
+    const [lstDelivery, setLstDelivery] = useState([]);
 
     const changeInput = (e) => {
         const { value, name } = e.target;
@@ -201,6 +204,16 @@ const AddNewProduct = (props) => {
                 formData.append("image", images.image8);
             formData.append("information", JSON.stringify(information))
             
+            if (ghnChecked){
+                lstDelivery.push(ListDelivery[0]);
+            }
+            if (ghtkChecked){
+                lstDelivery.push(ListDelivery[1]);
+            }
+            if (notDeliveryChecked){
+                lstDelivery.push(ListDelivery[2]);
+            }
+            formData.append("ship", JSON.stringify(lstDelivery));
             const res = await api.product.postCreate(formData);
 
             setLoading(false);
@@ -454,6 +467,19 @@ const AddNewProduct = (props) => {
         let tempUrl = urlImages;
         tempUrl.image8 = "";
         setUrlImages({ ...tempUrl });
+    }
+
+    const handleShippingChange = (e) => {
+        const shipping = e.target.value;
+        
+        if (shipping === 'ghtk'){
+            setGHTKChecked(e.target.checked);
+        } else if (shipping === 'ghn'){
+            setGHNChecked(e.target.checked);
+        } else {
+            setNotDeliveryChecked(e.target.checked);
+        }
+        
     }
 
     return (
@@ -876,29 +902,29 @@ const AddNewProduct = (props) => {
                             </div>
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
-                                <div className="col-sm-6">
+                                <form className="col-sm-6">
                                     <div className="d-flex flex-row align-items-center row mb-3">
                                         <div className="col-sm-4">Giao hàng nhanh</div>
                                         <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                            <input type="checkbox" name="ghn" onChange={handleShippingChange} value="ghn"/>
                                             <span></span>
                                         </label>
                                     </div>
                                     <div className="d-flex flex-row align-items-center row mb-3">
                                         <div className="col-sm-4">Giao hàng tiết kiệm</div>
                                         <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                            <input type="checkbox" name="ghtk" onChange={handleShippingChange} value="ghtk" />
                                             <span></span>
                                         </label>
                                     </div>
                                     <div className="d-flex flex-row align-items-center row">
                                         <div className="col-sm-4">Nhận hàng tại shop</div>
                                         <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                            <input type="checkbox" name="shop" onChange={handleShippingChange} value="shop" />
                                             <span></span>
                                         </label>
                                     </div>
-                                </div>
+                                </form>
                             </div>
 
                             {
