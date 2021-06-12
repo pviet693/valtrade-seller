@@ -5,18 +5,21 @@ import { useRef, useState, useEffect } from 'react';
 import api from './../../../utils/backend-api.utils';
 import * as common from './../../../utils/common.utils';
 import * as validate from './../../../utils/validate.utils';
-import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefault } from './../../../models/category.model';
+import { ListProperties, PropertyDefaultAuction } from './../../../models/category.model';
 import classNames from 'classnames';
 import cookie from "cookie";
 import { useRouter } from 'next/router';
+import { InputNumber } from 'primereact/inputnumber';
+import { Calendar } from 'primereact/calendar';
 
-const ProductDetail = (props) => {
+const AuctionDetail = (props) => {
     const router = useRouter();
     const [ghnChecked, setGHNChecked] = useState(false);
     const [ghtkChecked, setGHTKChecked] = useState(false);
     const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories, auction, accept, imagesUrl, info, attr } = props;
+    const { categories, auction, accept, imagesUrl, info, attr, brands } = props;
     const [category, setCategory] = useState(auction.category);
+    const [brand, setBrand] = useState(props.brand);
     const [showProperty, setShowProperty] = useState(true);
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(false);
@@ -96,6 +99,11 @@ const ProductDetail = (props) => {
         }
     }
 
+    const onChangeBrand = (e) => {
+        const { value } = e.target;
+        setBrand(value);
+    }
+
     const addCoverImage = () => {
         inputCoverImage.current.click();
     }
@@ -122,9 +130,39 @@ const ProductDetail = (props) => {
         console.log(e.target.files.length);
     }
 
-    const updateAuction = async (e) => {
+    const updateProduct = async (e) => {
         e.preventDefault();
         setShowError(true);
+
+        if (validate.checkEmptyInput(propertyDefault.name)
+            || propertyDefault.name.length > 200
+            || validate.checkEmptyInput(category.name)
+            || validate.checkEmptyInput(propertyDefault.description)
+            || propertyDefault.description.length > 3000
+            || validate.checkEmptyInput(propertyDefault.price)
+            || validate.checkEmptyInput(propertyDefault.oldPrice)
+            || validate.checkEmptyInput(propertyDefault.sku)
+            || validate.checkEmptyInput(propertyDefault.restWarrantyTime)
+            || validate.checkEmptyInput(propertyDefault.countProduct)
+            || validate.checkEmptyInput(brand ? brand.name : "")
+            || validate.checkEmptyInput(urlImages.coverImage)
+            || !validateImage()
+            || validate.checkEmptyInput(propertyDefault.length)
+            || validate.checkEmptyInput(propertyDefault.height)
+            || validate.checkEmptyInput(propertyDefault.width)
+            || validate.checkEmptyInput(propertyDefault.weight)
+            || validate.checkEmptyInput(propertyDefault.countDown)
+        ) {
+            return;
+        }
+
+        let checkValidate = true;
+        Object.keys(information).forEach(key => {
+            if (validate.checkEmptyInput(information[key]))
+                checkValidate = false;
+        })
+
+        if (!checkValidate) return;
 
         setLoading(true);
         refLoadingBar.current.continuousStart();
@@ -140,7 +178,13 @@ const ProductDetail = (props) => {
             formData.append("restWarrantyTime", propertyDefault.restWarrantyTime);
             formData.append("countProduct", propertyDefault.countProduct);
             formData.append("note", propertyDefault.note);
-            formData.append("brand", propertyDefault.brand);
+            formData.append("brandId", brand.id);
+            formData.append("weight", propertyDefault.weight);
+            formData.append("length", propertyDefault.length);
+            formData.append("width", propertyDefault.width);
+            formData.append("height", propertyDefault.height);
+            formData.append("countDown", propertyDefault.countDown);
+
             if (images.coverImage)
                 formData.append("image", images.coverImage);
             if (images.image1)
@@ -168,7 +212,8 @@ const ProductDetail = (props) => {
 
             if (res.status === 200) {
                 if (res.data.code === 200) {
-                    common.Toast("Cập nhật sản phẩm thành công", "success");
+                    common.Toast("Cập nhật sản phẩm thành công", "success")
+                        .then(() => router.push('/product'));
                 } else {
                     const message = res.data.message || "Cập nhật sản phẩm thất bại";
                     common.Toast(message, "error");
@@ -181,30 +226,30 @@ const ProductDetail = (props) => {
         }
     }
 
-    const deleteAuction = () => {
+    const deleteProduct = () => {
         common.ConfirmDialog('Xác nhận', 'Bạn muốn xóa sản phẩm này?')
             .then(async (result) => {
                 if (result.isConfirmed) {
                     try {
-                        setLoading(true);
+                        setDeleteLoading(true);
                         refLoadingBar.current.continuousStart();
 
                         const res = await api.product.delete(propertyDefault.id);
 
-                        setLoading(false);
+                        setDeleteLoading(false);
                         refLoadingBar.current.complete();
 
                         if (res.status === 200) {
                             if (res.data.code === 200) {
                                 common.Toast('Xóa sản phẩm thành công.', 'success')
-                                    .then(() => router.push('/auction'));
+                                    .then(() => router.push('/product'));
                             } else {
                                 const message = res.data.message || 'Xóa sản phẩm thất bại.';
                                 common.Toast(message, 'error');
                             }
                         }
                     } catch (error) {
-                        setLoading(false);
+                        setDeleteLoading(false);
                         refLoadingBar.current.complete();
                         common.Toast(error, 'error');
                     }
@@ -478,15 +523,27 @@ const ProductDetail = (props) => {
             }
         })
         setImages(tempImages);
+
+        let temp = propertyDefault;
+        temp.restWarrantyTime = new Date(propertyDefault.restWarrantyTime);
+        setPropertyDefault(temp);
     }, [])
 
+    const validateImage = () => {
+        let num = 0;
+        Object.keys(urlImages).forEach(x => {
+            num += urlImages[x].url ? 1 : 0;
+        })
+        return num >= 4;
+    }
+
     return (
-        <div className="auction-detail">
+        <div className="product-detail">
             <Head>
                 <title>Chi tiết sản phẩm</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} onLoaderFinished={() => { }} />
-            <div className="auction-detail-container">
+            <div className="product-detail-container">
                 <div className="title">
                     Chi tiết sản phẩm
                 </div>
@@ -497,9 +554,21 @@ const ProductDetail = (props) => {
                         <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm: </label>
                         <div className="col-sm-6">
                             <div className="input-group">
-                                <input className="form-control" name="name" id="name" placeholder="Nhập tên sản phẩm" type="text" onChange={changeInput} value={propertyDefault.name} />
+                                <input className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.name) || (propertyDefault.name.length > 200)) && showError })} name="name" id="name" placeholder="Nhập tên sản phẩm" type="text" onChange={changeInput} value={propertyDefault.name} />
                                 <span className="input-group-addon">{`${propertyDefault.name.length}/200`}</span>
                             </div>
+                            {
+                                validate.checkEmptyInput(propertyDefault.name) && showError &&
+                                <div className="invalid-feedback text-left">
+                                    Tên sản phẩm không được trống.
+                                </div>
+                            }
+                            {
+                                (propertyDefault.name.length > 200) && showError &&
+                                <div className="invalid-feedback text-left">
+                                    Tên sản phẩm không dài quá 200 kí tự.
+                                </div>
+                            }
                         </div>
                     </div>
                     <div className="select-category">
@@ -510,7 +579,15 @@ const ProductDetail = (props) => {
                             <div className="align-items-center d-flex input-category row">
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
-                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category" />
+                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(category.name) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Danh mục không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="select-category-result row">
@@ -530,7 +607,19 @@ const ProductDetail = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="description" className="col-sm-2 col-form-label">Mô tả sản phẩm </label>
                                 <div className="col-sm-6">
-                                    <textarea className="form-control" placeholder="Mô tả sản phẩm" rows="8" name="description" id="description" onChange={changeInput} value={propertyDefault.description}></textarea>
+                                    <textarea className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.description) || (propertyDefault.description.length > 3000)) && showError })} placeholder="Mô tả sản phẩm" rows="8" name="description" id="description" onChange={changeInput} value={propertyDefault.description}></textarea>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.description) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Mô tả không được trống.
+                                        </div>
+                                    }
+                                    {
+                                        (propertyDefault.description.length > 3000) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Mô tả không dài quá 3000 kí tự.
+                                        </div>
+                                    }
                                     <div className="text-right mt-1">
                                         {`${propertyDefault.description.length}/3000`}
                                     </div>
@@ -541,61 +630,193 @@ const ProductDetail = (props) => {
                                 <label htmlFor="price" className="col-sm-2 col-form-label">Giá bán: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập giá sản phẩm" type="number" name="price" id="price" onChange={changeInput} value={propertyDefault.price} />
+                                        <InputNumber name="price" id="price" placeholder="Nhập giá sản phẩm" onValueChange={(e) => changeInput(e)} value={propertyDefault.price}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.price) && showError })}
+                                        />
                                         <span className="input-group-addon">vnđ</span>
                                     </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.price) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Giá bán không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua gốc: </label>
+                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua ban đầu: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập giá mua gốc" type="number" name="oldPrice" id="oldPrice" onChange={changeInput} value={propertyDefault.oldPrice} />
+                                        <InputNumber name="oldPrice" id="oldPrice" placeholder="Nhập giá mua ban đầu" onValueChange={(e) => changeInput(e)} value={propertyDefault.oldPrice}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.oldPrice) && showError })}
+                                        />
                                         <span className="input-group-addon">vnđ</span>
                                     </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.oldPrice) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Giá bán không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
-                            <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="brand" className="col-sm-2 col-form-label">Thương hiệu: </label>
+                            <div className="form-group row align-items-center d-flex input-brand">
+                                <label htmlFor="brand" className="col-sm-2 col-form-label">Chọn thương hiệu: </label>
                                 <div className="col-sm-6">
-                                    <input className="form-control" placeholder="Nhập thương hiệu" type="text" name="brand" id="brand" onChange={changeInput} value={propertyDefault.brand} />
+                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(brand ? brand.name : "") && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(brand ? brand.name : "") && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Thương hiệu không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="sku" className="col-sm-2 col-form-label">SKU: </label>
                                 <div className="col-sm-6">
-                                    <input className="form-control" placeholder="Nhập sku" type="text" name="sku" id="=sku" onChange={changeInput} value={propertyDefault.sku} />
+                                    <input className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(propertyDefault.sku) && showError })} placeholder="Nhập sku" type="text" name="sku" id="=sku" onChange={changeInput} value={propertyDefault.sku} />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.sku) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            SKU không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Thời gian bảo hành còn lại: </label>
+                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Ngày hết hạn bảo hành: </label>
                                 <div className="col-sm-6">
-                                    <div className="input-group">
-                                        <input className="form-control" placeholder="Nhập sku" type="text" name="restWarrantyTime" id="restWarrantyTime" onChange={changeInput} value={propertyDefault.restWarrantyTime} />
-                                        <span className="input-group-addon">ngày</span>
-                                    </div>
+                                    <Calendar id="date" value={new Date(propertyDefault.restWarrantyTime)} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            SKU không được trống.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="countProduct" className="col-sm-2 col-form-label">Số lượng: </label>
                                 <div className="col-sm-6">
-                                    <input className="form-control" placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct} />
+                                    <input placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct}
+                                        className={classNames('form-control', { 'is-invalid': validate.checkEmptyInput(propertyDefault.countProduct) && showError })}
+                                    />
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.countProduct) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Số lượng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Cân nặng (gram)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="weight" id="weight" placeholder="Nhập cân nặng" onValueChange={(e) => changeInput(e)} value={propertyDefault.weight}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.weight) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">gram</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.weight) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Cân nặng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều dài (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="length" id="length" placeholder="Nhập chiều dài" onValueChange={(e) => changeInput(e)} value={propertyDefault.length}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.length) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.length) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều dài lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều rộng (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="width" id="width" placeholder="Nhập chiều rộng" onValueChange={(e) => changeInput(e)} value={propertyDefault.width}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.width) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.width) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều rộng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countDown" className="col-sm-2 col-form-label">Thời gian đấu giá*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="countDown" id="countDown" placeholder="Nhập thời gian" onValueChange={(e) => changeInput(e)} value={propertyDefault.countDown}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.countDown) && showError })}
+                                        />
+                                        <span className="input-group-addon">giây</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.countDown) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Thời gian đấu giá không được rỗng.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="height" id="height" placeholder="Nhập chiều cao" onValueChange={(e) => changeInput(e)} value={propertyDefault.height}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.height) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.height) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều cao lớn hơn 0.
+                                        </div>
+                                    }
                                 </div>
                             </div>
                             <div className="form-group row">
                                 <label htmlFor="note" className="col-sm-2 col-form-label">Lưu ý: </label>
                                 <div className="col-sm-6">
-                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note || ""}></textarea>
+                                    <textarea className="form-control" placeholder="Nhập lưu ý" rows="8" name="note" id="note" onChange={changeInput} value={propertyDefault.note}></textarea>
                                     <div className="text-right mt-1">
-                                        {`${propertyDefault.note ? propertyDefault.note.length : 0}/3000`}
+                                        {`${propertyDefault.note.length}/3000`}
                                     </div>
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-auction" className="col-sm-2 col-form-label">Hình ảnh: </label>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh (ít nhất 4 hình ảnh): {!validateImage() && showError && <span className="invalid-feedback text-left">Sản phẩm phải có ít nhất 4 hình ảnh minh họa.</span>}</label>
                                 <div className="col-sm-6 d-flex flex-row flex-wrap">
                                     <div className="d-flex flex-column add-image-container">
-                                        <div className="add-image-box">
+                                        <div className={classNames("add-image-box", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
                                             {
                                                 urlImages.coverImage.url === "" &&
                                                 <>
@@ -613,14 +834,8 @@ const ProductDetail = (props) => {
                                                 </>
                                             }
                                         </div>
-                                        {
-                                            validate.checkEmptyInput(urlImages.coverImage) && showError &&
-                                            <div className="invalid-feedback">
-                                                Hình ảnh bìa không được trống.
-                                            </div>
-                                        }
                                         <div className="text-center mt-2">
-                                            Hình ảnh bìa
+                                            Hình ảnh 0
                                         </div>
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
@@ -648,22 +863,22 @@ const ProductDetail = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                                {
-                                                    urlImages.image2.url === "" &&
-                                                    <>
-                                                        <div className={classNames("add-image-circle")}>
-                                                            <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
-                                                            <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
-                                                        </div>
-                                                    </>
-                                                }
-                                                {
-                                                    urlImages.image2.url !== "" &&
-                                                    <>
-                                                        <img src={urlImages.image2.url} alt="Image 2" />
-                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
-                                                    </>
-                                                }
+                                            {
+                                                urlImages.image2.url === "" &&
+                                                <>
+                                                    <div className={classNames("add-image-circle")}>
+                                                        <input type="file" accept="image/*" ref={image2} onChange={selectImage2} />
+                                                        <i className="fa fa-plus" aria-hidden onClick={addImage2}></i>
+                                                    </div>
+                                                </>
+                                            }
+                                            {
+                                                urlImages.image2.url !== "" &&
+                                                <>
+                                                    <img src={urlImages.image2.url} alt="Image 2" />
+                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage2()}></i>
+                                                </>
+                                            }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 2
@@ -671,22 +886,22 @@ const ProductDetail = (props) => {
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
                                         <div className="add-image-box">
-                                                {
-                                                    urlImages.image3.url === "" &&
-                                                    <>
-                                                        <div className={classNames("add-image-circle")}>
-                                                            <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
-                                                            <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
-                                                        </div>
-                                                    </>
-                                                }
-                                                {
-                                                    urlImages.image3.url !== "" &&
-                                                    <>
-                                                        <img src={urlImages.image3.url} alt="Image 3" />
-                                                        <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
-                                                    </>
-                                                }
+                                            {
+                                                urlImages.image3.url === "" &&
+                                                <>
+                                                    <div className={classNames("add-image-circle")}>
+                                                        <input type="file" accept="image/*" ref={image3} onChange={selectImage3} />
+                                                        <i className="fa fa-plus" aria-hidden onClick={addImage3}></i>
+                                                    </div>
+                                                </>
+                                            }
+                                            {
+                                                urlImages.image3.url !== "" &&
+                                                <>
+                                                    <img src={urlImages.image3.url} alt="Image 1" />
+                                                    <i className="fa fa-trash" aria-hidden onClick={() => deleteImage3()}></i>
+                                                </>
+                                            }
                                         </div>
                                         <div className="text-center mt-2">
                                             Hình ảnh 3
@@ -706,7 +921,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image4.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image4.url} alt="Image 2" />
+                                                    <img src={urlImages.image4.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage4()}></i>
                                                 </>
                                             }
@@ -729,7 +944,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image5.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image5.url} alt="Image 2" />
+                                                    <img src={urlImages.image5.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage5()}></i>
                                                 </>
                                             }
@@ -752,7 +967,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image6.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image6.url} alt="Image 2" />
+                                                    <img src={urlImages.image6.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage6()}></i>
                                                 </>
                                             }
@@ -775,7 +990,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image7.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image7.url} alt="Image 2" />
+                                                    <img src={urlImages.image7.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage7()}></i>
                                                 </>
                                             }
@@ -798,7 +1013,7 @@ const ProductDetail = (props) => {
                                             {
                                                 urlImages.image8.url !== "" &&
                                                 <>
-                                                    <img src={urlImages.image8.url} alt="Image 2" />
+                                                    <img src={urlImages.image8.url} alt="Image 1" />
                                                     <i className="fa fa-trash" aria-hidden onClick={() => deleteImage8()}></i>
                                                 </>
                                             }
@@ -810,7 +1025,7 @@ const ProductDetail = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="video" className="col-sm-2 col-form-label">Video: </label>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Video: </label>
                                 <div className="d-flex flex-row flex-wrap align-items-center">
                                     <div className="d-flex flex-column add-video-container">
                                         <div className="add-video-box">
@@ -830,7 +1045,7 @@ const ProductDetail = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="delivery" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
                                     <div className="d-flex flex-row align-items-center row mb-3">
                                         <div className="col-sm-4">Giao hàng nhanh</div>
@@ -882,11 +1097,11 @@ const ProductDetail = (props) => {
                                 <div className="mr-3">
                                     {
                                         isDeleteLoading &&
-                                        <button type="button" className="btn button-delete" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
+                                        <button type="button" className="btn button-delete btn-danger" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
                                     }
                                     {
                                         !isDeleteLoading &&
-                                        <button className="btn button-delete btn-danger" onClick={deleteAuction}>Xóa</button>
+                                        <button className="btn button-delete btn-danger" onClick={deleteProduct}>Xóa</button>
                                     }
                                 </div>
                                 <div>
@@ -896,7 +1111,7 @@ const ProductDetail = (props) => {
                                     }
                                     {
                                         !isLoading &&
-                                        <button className="btn button-save" onClick={updateAuction}>Cập nhật</button>
+                                        <button className="btn button-save" onClick={updateProduct}>Cập nhật</button>
                                     }
                                 </div>
                             </div>
@@ -914,9 +1129,11 @@ export async function getServerSideProps(ctx) {
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
         if (token) {
+            let brands = [];
+            let brand = { id: "", name: "" };
             let categories = [];
             let listAttribute = [];
-            let auction = {
+            let product = {
                 id: "",
                 name: "",
                 description: "",
@@ -926,12 +1143,16 @@ export async function getServerSideProps(ctx) {
                 sku: "",
                 countProduct: 0,
                 note: "",
-                brand: "",
-                restWarrantyTime: 0,
+                restWarrantyTime: "",
+                weight: 0,
+                length: 0,
+                width: 0,
+                height: 0,
+                countDown: 0
             }
             let accept = false;
             let urlImages = {
-                coverImage: { url: "", id: ""},
+                coverImage: { url: "", id: "" },
                 image1: { url: "", id: "" },
                 image2: { url: "", id: "" },
                 image3: { url: "", id: "" },
@@ -953,25 +1174,30 @@ export async function getServerSideProps(ctx) {
                         categories.push(categoryItem);
                     })
 
-                    const resAuction = await api.product.getDetail(id, token);
-                    if (resAuction.status === 200) {
-                        if (resAuction.data.code === 200) {
-                            const result = resAuction.data.result;
-                            auction.id = result._id || "";
-                            auction.name = result.name || "";
-                            auction.description = result.description || "";
-                            auction.category = {
+                    const resProduct = await api.product.getDetail(id, token);
+                    if (resProduct.status === 200) {
+                        if (resProduct.data.code === 200) {
+                            const result = resProduct.data.result;
+                            brand.id = result.brand ? (result.brand._id || "") : "";
+                            brand.name = result.brand ? (result.brand.name || "") : "";
+                            product.id = result._id || "";
+                            product.name = result.name || "";
+                            product.description = result.description || "";
+                            product.category = {
                                 id: result.categoryInfor ? (result.categoryInfor._id || "") : "",
                                 name: result.categoryInfor ? (result.categoryInfor.name || "") : ""
                             };
-                            auction.price = result.price;
-                            auction.oldPrice = result.oldPrice;
-                            auction.sku = result.sku
-                            auction.countProduct = result.countProduct;
-                            auction.note = result.note;
-                            auction.brand = result.brand;
-                            auction.restWarrantyTime = result.restWarrantyTime || 100;
-
+                            product.price = result.price;
+                            product.oldPrice = result.oldPrice;
+                            product.sku = result.sku;
+                            product.countProduct = result.countProduct;
+                            product.note = result.note || "";
+                            product.restWarrantyTime = result.restWarrantyTime;
+                            product.weight = result.weight || 0;
+                            product.length = result.length || 0;
+                            product.width = result.width || 0;
+                            product.height = result.height || 0;
+                            product.countDown = result.countDown || 0;
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;
@@ -986,7 +1212,7 @@ export async function getServerSideProps(ctx) {
 
                             information = result.information;
 
-                            const resAttr = await api.category.getDetail(auction.category.id);
+                            const resAttr = await api.category.getDetail(product.category.id);
                             if (resAttr.status === 200) {
                                 if (resAttr.data.code === 200) {
                                     let listKey = Object.keys(resAttr.data.result.information);
@@ -1000,18 +1226,37 @@ export async function getServerSideProps(ctx) {
                         }
                     }
                 }
+
+                const resBrand = await api.brand.getList(token);
+
+                if (resBrand.status === 200) {
+                    if (resBrand.data.code === 200) {
+                        const result = resBrand.data.result;
+                        result.forEach(x => {
+                            let item = {
+                                id: "",
+                                name: ""
+                            }
+                            item.id = x._id || "";
+                            item.name = x.name || "";
+                            brands.push(item);
+                        })
+                    }
+                }
             } catch (err) {
                 console.log(err.message);
             }
 
             return {
-                props: { 
-                    categories: categories, 
-                    auction: auction, 
+                props: {
+                    categories: categories,
+                    auction: product,
                     accept: accept,
                     imagesUrl: urlImages,
                     info: information,
-                    attr: listAttribute
+                    attr: listAttribute,
+                    brands: brands,
+                    brand: brand
                 }
             }
         }
@@ -1033,4 +1278,4 @@ export async function getServerSideProps(ctx) {
     }
 }
 
-export default ProductDetail;
+export default AuctionDetail;

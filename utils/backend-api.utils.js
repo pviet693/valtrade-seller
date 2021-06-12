@@ -6,7 +6,7 @@ import * as common from './common.utils';
 let token = Cookie.get('seller_token');
 
 let config = {
-    headers: { 
+    headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -107,12 +107,38 @@ const api = {
             }
         }
     },
+    auction: {
+        postCreate: (body) => {
+            if (isEnable()) {
+                const newConfig = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Access-Control-Allow-Origin': '*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+                return axios.post(url.auction.postCreate(), body, newConfig);
+            }
+        },
+        putUpdate: (body, id) => {
+            if (isEnable()) {
+                const newConfig = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Access-Control-Allow-Origin': '*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+                return axios.put(url.auction.putUpdate().replace(':id', id), body, newConfig);
+            }
+        }
+    },
     brand: {
         getList: (tokenSeller) => {
             if (isEnable(tokenSeller)) {
                 return axios.get(url.brand.getList(), config);
             }
-        } 
+        }
     },
     deliverySetting: {
         postSetting: (body) => {

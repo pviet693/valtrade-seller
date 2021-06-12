@@ -43,10 +43,10 @@ const ShippingSetting = ({ provinces, settings }) => {
         setDistrict(null);
         setWard(null);
 
-        try {   
+        try {
             const res = await api.ghn.getDistrict(e.value.ProvinceID);
             setDistricts(res.data.data);
-        } catch(error) {
+        } catch (error) {
             common.Toast(error, 'error');
         }
     }
@@ -94,45 +94,37 @@ const ShippingSetting = ({ provinces, settings }) => {
             refLoadingBar.current.continuousStart();
 
             let ghn = null;
-            let ghtk = null;
-            let local = null;
-            
+
             if (province && district && ward && street) {
-                ghn = !disableGHN 
-                        ? 
-                        {
-                            province: {
-                                province_id: province.ProvinceID,
-                                name: province.ProvinceName
-                            },
-                            district: {
-                                district_id: district.DistrictID,
-                                name: district.DistrictName
-                            },
-                            ward: {
-                                ward_code: ward.WardCode,
-                                name: ward.WardName
-                            },
-                            isChoose: activeGHN === 1 ? true : false,
-                            street: street
-                        }
-                        : 
-                        { 
-                            isChoose: activeGHN === 1 ? true : false, 
-                        }
+                ghn = !disableGHN
+                    ?
+                    {
+                        province: {
+                            province_id: province.ProvinceID,
+                            name: province.ProvinceName
+                        },
+                        district: {
+                            district_id: district.DistrictID,
+                            name: district.DistrictName
+                        },
+                        ward: {
+                            ward_code: ward.WardCode,
+                            name: ward.WardName
+                        },
+                        isChoose: activeGHN === 1 ? true : false,
+                        street: street
+                    }
+                    :
+                    {
+                        isChoose: activeGHN === 1 ? true : false,
+                    }
             } else {
                 return;
             }
 
-            if (disableGHTK) ghtk = { isChoose: activeGHTK };
-
-            if (addressLocal) local = { isChoose: activeLocal };
-
             let body = {};
 
             if (ghn) { body["ghn"] = ghn; }
-            if (ghtk) { body["ghtk"] = ghtk; }
-            if (local) { body["local"] = local; }
 
             const res = await api.deliverySetting.postSetting(body);
             setLoading(false);
@@ -141,7 +133,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                 common.Toast('Lưu thành công', 'success')
                     .then(() => setDisableGHN(true));
             }
-        } catch(error) {
+        } catch (error) {
             setLoading(false);
             refLoadingBar.current.complete();
             console.log(error);
@@ -154,36 +146,28 @@ const ShippingSetting = ({ provinces, settings }) => {
             refLoadingBar.current.continuousStart();
 
             let ghtk = null;
-            let ghn = null;
-            let local = null;
 
             if (provinceGHTK && districtGHTK && wardGHTK && streetGHTK) {
-                ghtk = !disableGHTK 
-                        ?
-                        {
-                            pick_province: provinceGHTK.ProvinceName,
-                            pick_district: districtGHTK.DistrictName,
-                            pick_ward: wardGHTK.WardName,
-                            isChoose: activeGHTK === 1 ? true : false,
-                            street: streetGHTK
-                        }
-                        : 
-                        { 
-                            isChoose: activeGHTK === 1 ? true : false 
-                        }
+                ghtk = !disableGHTK
+                    ?
+                    {
+                        pick_province: provinceGHTK.ProvinceName,
+                        pick_district: districtGHTK.DistrictName,
+                        pick_ward: wardGHTK.WardName,
+                        isChoose: activeGHTK === 1 ? true : false,
+                        street: streetGHTK
+                    }
+                    :
+                    {
+                        isChoose: activeGHTK === 1 ? true : false
+                    }
             } else {
                 return;
             }
 
-            if (disableGHN) ghn = { isChoose: activeGHN === 1 ? true : false };
-
-            if (addressLocal) local = { isChoose: activeLocal === 1 ? true : false };
-
             let body = {};
 
             if (ghtk) { body["ghtk"] = ghtk; }
-            if (ghn) { body["ghn"] = ghn; }
-            if (local) { body["local"] = local; }
 
             const res = await api.deliverySetting.postSetting(body);
             setLoadingGHTK(false);
@@ -204,8 +188,6 @@ const ShippingSetting = ({ provinces, settings }) => {
             setLoadingLocal(true);
             refLoadingBar.current.continuousStart();
 
-            let ghn = null;
-            let ghtk = null;
             let local = null;
 
             if (addressLocal) {
@@ -217,14 +199,8 @@ const ShippingSetting = ({ provinces, settings }) => {
                 return;
             }
 
-            if (disableGHN) ghn = { isChoose: activeGHN === 1 ? true : false };
-
-            if (disableGHTK) ghtk = { isChoose: activeGHTK === 1 ? true : false };
-
             let body = {};
 
-            if (ghtk) { body["ghtk"] = ghtk; }
-            if (ghn) { body["ghn"] = ghn; }
             if (local) { body["local"] = local; }
 
             const res = await api.deliverySetting.postSetting(body);
@@ -242,6 +218,7 @@ const ShippingSetting = ({ provinces, settings }) => {
 
     const initValue = async () => {
         if (settings) {
+            console.log(settings);
             if (settings.ghn) {
                 try {
                     const resDistrict = await api.ghn.getDistrict(settings.ghn.province.province_id);
@@ -263,9 +240,9 @@ const ShippingSetting = ({ provinces, settings }) => {
 
             if (settings.ghtk) {
                 try {
-                    setProvinceGHTK(settings.ghtk.province.pick_province);
-                    setDistrictGHTK(settings.ghtk.province.pick_district);
-                    setWardGHTK(settings.ghtk.province.pick_ward);
+                    setProvinceGHTK(settings.ghtk.pick_province);
+                    setDistrictGHTK(settings.ghtk.pick_district);
+                    setWardGHTK(settings.ghtk.pick_ward);
                     setStreetGHTK(settings.ghtk.street);
                     setActiveGHTK(settings.ghtk.isChoose ? 1 : 0);
                 } catch (error) {
@@ -412,13 +389,13 @@ const ShippingSetting = ({ provinces, settings }) => {
                                     </div>
                                     <div className="setting-row">
                                         <label className="row-title" htmlFor="street">Tòa nhà, tên đường: </label>
-                                        <input 
-                                            type="text" className="form-control" 
-                                            id="street" name="street_name" 
-                                            placeholder="Tòa nhà, Tên đường..." 
+                                        <input
+                                            type="text" className="form-control"
+                                            id="street" name="street_name"
+                                            placeholder="Tòa nhà, Tên đường..."
                                             value={street} onChange={e => setStreet(e.target.value)}
                                             disabled={disableGHN}
-                                            />
+                                        />
                                     </div>
                                 </>
                         }
@@ -460,7 +437,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                         />
                         {
                             disableGHTK
-                            ?
+                                ?
                                 <>
                                     <div className="setting-row">
                                         <label className="row-title" htmlFor="province-ghtk">Tỉnh/Thành phố: </label>
@@ -504,7 +481,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                                         />
                                     </div>
                                 </>
-                            :
+                                :
                                 <>
                                     <div className="setting-row">
                                         <label className="row-title" htmlFor="province-ghtk">Tỉnh/Thành phố: </label>
@@ -551,13 +528,13 @@ const ShippingSetting = ({ provinces, settings }) => {
 
                                     <div className="setting-row">
                                         <label className="row-title" htmlFor="street-ghtk">Tòa nhà, tên đường: </label>
-                                        <input 
-                                            type="text" className="form-control" 
+                                        <input
+                                            type="text" className="form-control"
                                             id="street-ghtk" name="street_name"
-                                            placeholder="Tòa nhà, Tên đường..." 
+                                            placeholder="Tòa nhà, Tên đường..."
                                             value={streetGHTK} onChange={e => setStreetGHTK(e.target.value)}
                                             disabled={disableGHTK}
-                                            />
+                                        />
                                     </div>
                                 </>
                         }
@@ -599,13 +576,13 @@ const ShippingSetting = ({ provinces, settings }) => {
                         />
                         <div className="setting-row">
                             <label className="row-title" htmlFor="address-local">Địa chỉ: </label>
-                            <textarea 
-                                type="text" className="form-control" 
-                                id="address-local" name="address_local" 
-                                placeholder="Nhập địa chỉ..." rows={5} 
+                            <textarea
+                                type="text" className="form-control"
+                                id="address-local" name="address_local"
+                                placeholder="Nhập địa chỉ..." rows={5}
                                 value={addressLocal}
                                 onChange={e => setAddressLocal(e.target.value)}
-                                />
+                            />
                         </div>
 
                         <div className="setting-row-button">
