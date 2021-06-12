@@ -14,10 +14,10 @@ import { Calendar } from 'primereact/calendar';
 
 const ProductDetail = (props) => {
     const router = useRouter();
-    const [ghnChecked, setGHNChecked] = useState(false);
-    const [ghtkChecked, setGHTKChecked] = useState(false);
-    const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories, product, accept, imagesUrl, info, attr, brands } = props;
+    const { categories, product, accept, imagesUrl, info, attr, brands, deliverArr, settingShippingArray } = props;
+    const [ghnChecked, setGHNChecked] = useState(deliverArr.ghn ? true : false);
+    const [ghtkChecked, setGHTKChecked] = useState(deliverArr.ghtk ? true : false);
+    const [notDeliveryChecked, setNotDeliveryChecked] = useState(deliverArr.local ? true : false);
     const [category, setCategory] = useState(product.category);
     const [brand, setBrand] = useState(props.brand);
     const [showProperty, setShowProperty] = useState(true);
@@ -151,6 +151,7 @@ const ProductDetail = (props) => {
             || validate.checkEmptyInput(propertyDefault.height)
             || validate.checkEmptyInput(propertyDefault.width)
             || validate.checkEmptyInput(propertyDefault.weight)
+            || (!ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -182,6 +183,11 @@ const ProductDetail = (props) => {
             formData.append("length", propertyDefault.length);
             formData.append("width", propertyDefault.width);
             formData.append("height", propertyDefault.height);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
 
             if (images.coverImage)
                 formData.append("image", images.coverImage);
@@ -1028,27 +1034,37 @@ const ProductDetail = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng nhanh</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row">
-                                        <div className="col-sm-4">Nhận hàng tại shop</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
+
+                                    {
+                                        settingShippingArray.ghn && settingShippingArray.ghn.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng nhanh</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.ghtk && settingShippingArray.ghtk.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.local && settingShippingArray.local.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row">
+                                            <div className="col-sm-4">Nhận hàng tại shop</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
                                 </div>
                             </div>
 
@@ -1130,6 +1146,8 @@ export async function getServerSideProps(ctx) {
                 width: 0,
                 height: 0
             }
+            let deliverArr = {};
+            let settingShippingArray;
             let accept = false;
             let urlImages = {
                 coverImage: { url: "", id: "" },
@@ -1177,6 +1195,11 @@ export async function getServerSideProps(ctx) {
                             product.length = result.length || 0;
                             product.width = result.width || 0;
                             product.height = result.height || 0;
+                            result.deliverArray.forEach(x => {
+                                if (x.ghn) deliverArr["ghn"] = x.ghn;
+                                if (x.ghtk) deliverArr["ghtk"] = x.ghtk;
+                                if (x.local) deliverArr["local"] = x.local;
+                            })
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;
@@ -1222,21 +1245,26 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
+
+                return {
+                    props: {
+                        categories: categories,
+                        product: product,
+                        accept: accept,
+                        imagesUrl: urlImages,
+                        info: information,
+                        attr: listAttribute,
+                        brands: brands,
+                        brand: brand,
+                        deliverArr: deliverArr,
+                        settingShippingArray
+                    }
+                }
             } catch (err) {
                 console.log(err.message);
-            }
-
-            return {
-                props: {
-                    categories: categories,
-                    product: product,
-                    accept: accept,
-                    imagesUrl: urlImages,
-                    info: information,
-                    attr: listAttribute,
-                    brands: brands,
-                    brand: brand
-                }
             }
         }
         else {

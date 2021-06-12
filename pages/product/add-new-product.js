@@ -159,6 +159,8 @@ const AddNewProduct = (props) => {
             || validate.checkEmptyInput(propertyDefault.height)
             || validate.checkEmptyInput(propertyDefault.width)
             || validate.checkEmptyInput(propertyDefault.weight)
+            || !checkSettingDelivery()
+            || (checkSettingDelivery() && !ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -190,6 +192,11 @@ const AddNewProduct = (props) => {
             formData.append("length", propertyDefault.length);
             formData.append("width", propertyDefault.width);
             formData.append("height", propertyDefault.height);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
 
             if (images.coverImage)
                 formData.append("image", images.coverImage);
@@ -472,6 +479,11 @@ const AddNewProduct = (props) => {
             num += urlImages[x] ? 1 : 0;
         })
         return num >= 4;
+    }
+
+    const checkSettingDelivery = () => {
+        return !(!props.settingShippingArray || (!props.settingShippingArray.ghn && !props.settingShippingArray.ghtk && !props.settingShippingArray.local)
+            || (!props.settingShippingArray.local.isChoose && !props.settingShippingArray.ghn.isChoose && !props.settingShippingArray.ghtk.isChoose));
     }
 
     return (
@@ -967,27 +979,46 @@ const AddNewProduct = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển*: </label>
                                 <div className="col-sm-6">
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng nhanh</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row">
-                                        <div className="col-sm-4">Nhận hàng tại shop</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
+                                    {
+                                        !checkSettingDelivery()
+                                            ?
+                                            <div className="invalid-feedback text-left">
+                                                Vui lòng cài đặt vận chuyển cho sản phẩm ở tab "Cài đặt vận chuyển" trước khi tạo sản phẩm.
+                                            </div>
+                                            :
+                                            <>
+                                                {
+                                                    props.settingShippingArray.ghn && props.settingShippingArray.ghn.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng nhanh</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.ghtk && props.settingShippingArray.ghtk.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.local && props.settingShippingArray.local.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row">
+                                                        <div className="col-sm-4">Nhận hàng tại shop</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </>
+                                    }
                                 </div>
                             </div>
 
@@ -1034,6 +1065,7 @@ const AddNewProduct = (props) => {
 export async function getServerSideProps(ctx) {
     let categories = [];
     let brands = [];
+    let settingShippingArray;
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
@@ -1066,8 +1098,12 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
+
                 return {
-                    props: { categories: categories, brands: brands }
+                    props: { categories: categories, brands: brands, settingShippingArray }
                 }
             } catch (err) {
                 console.log(err.message);
