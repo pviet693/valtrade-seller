@@ -7,7 +7,7 @@ import api from './../../utils/backend-api.utils';
 import * as common from './../../utils/common.utils';
 import * as validate from './../../utils/validate.utils';
 import cookie from 'cookie';
-import { CategoryItemModel, ListProperties, ListPropertiesDefault, PropertyDefaultAuction } from './../../models/category.model';
+import { ListProperties, PropertyDefaultAuction } from './../../models/category.model';
 import classNames from 'classnames';
 import { InputNumber } from 'primereact/inputnumber';
 import { useRouter } from 'next/router';
@@ -160,6 +160,8 @@ const AddNewAuction = (props) => {
             || validate.checkEmptyInput(propertyDefault.width)
             || validate.checkEmptyInput(propertyDefault.weight)
             || validate.checkEmptyInput(propertyDefault.countDown)
+            || !checkSettingDelivery()
+            || (checkSettingDelivery() && !ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -192,6 +194,11 @@ const AddNewAuction = (props) => {
             formData.append("width", propertyDefault.width);
             formData.append("height", propertyDefault.height);
             formData.append("countDown", propertyDefault.countDown);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
 
             if (images.coverImage)
                 formData.append("image", images.coverImage);
@@ -221,7 +228,7 @@ const AddNewAuction = (props) => {
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Tạo sản phẩm thành công", "success")
-                        .then(() => router.push('/auction'));
+                        .then(() => router.push('/product'));
                 } else {
                     const message = res.data.message || "Tạo sản phẩm thất bại";
                     common.Toast(message, "error");
@@ -476,13 +483,18 @@ const AddNewAuction = (props) => {
         return num >= 4;
     }
 
+    const checkSettingDelivery = () => {
+        return !(!props.settingShippingArray || (!props.settingShippingArray.ghn && !props.settingShippingArray.ghtk && !props.settingShippingArray.local)
+            || (!props.settingShippingArray.local.isChoose && !props.settingShippingArray.ghn.isChoose && !props.settingShippingArray.ghtk.isChoose));
+    }
+
     return (
-        <div className="auction-add-new">
+        <div className="product-add-new">
             <Head>
                 <title>Thêm mới sản phẩm</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} onLoaderFinished={() => { }} />
-            <div className="auction-add-new-container">
+            <div className="product-add-new-container">
                 <div className="title">
                     Thêm mới sản phẩm
                 </div>
@@ -654,7 +666,7 @@ const AddNewAuction = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Cân nặng (gram)*: </label>
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Cân nặng*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
                                         <InputNumber name="weight" id="weight" placeholder="Nhập cân nặng" onValueChange={(e) => changeInput(e)} value={propertyDefault.weight}
@@ -672,7 +684,7 @@ const AddNewAuction = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều dài (cm)*: </label>
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều dài*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
                                         <InputNumber name="length" id="length" placeholder="Nhập chiều dài" onValueChange={(e) => changeInput(e)} value={propertyDefault.length}
@@ -690,7 +702,7 @@ const AddNewAuction = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều rộng (cm)*: </label>
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều rộng*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
                                         <InputNumber name="width" id="width" placeholder="Nhập chiều rộng" onValueChange={(e) => changeInput(e)} value={propertyDefault.width}
@@ -708,24 +720,7 @@ const AddNewAuction = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countDown" className="col-sm-2 col-form-label">Thời gian đấu giá*: </label>
-                                <div className="col-sm-6">
-                                    <div className="input-group">
-                                        <InputNumber name="countDown" id="countDown" placeholder="Nhập thời gian" onValueChange={(e) => changeInput(e)} value={propertyDefault.countDown}
-                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.countDown) && showError })}
-                                        />
-                                        <span className="input-group-addon">giây</span>
-                                    </div>
-                                    {
-                                        validate.checkEmptyInput(propertyDefault.countDown) && showError &&
-                                        <div className="invalid-feedback text-left">
-                                            Thời gian đấu giá không được rỗng.
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                            <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao (cm)*: </label>
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
                                         <InputNumber name="height" id="height" placeholder="Nhập chiều cao" onValueChange={(e) => changeInput(e)} value={propertyDefault.height}
@@ -738,6 +733,23 @@ const AddNewAuction = (props) => {
                                         validate.checkEmptyInput(propertyDefault.height) && showError &&
                                         <div className="invalid-feedback text-left">
                                             Chiều cao lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Thời gian đấu giá*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="countDown" id="countDown" placeholder="Nhập thời gian" onValueChange={(e) => changeInput(e)} value={propertyDefault.countDown}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.countDown) && showError })}
+                                        />
+                                        <span className="input-group-addon">giây</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.countDown) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Thời gian đấu giá phải lớn hơn 0.
                                         </div>
                                     }
                                 </div>
@@ -986,27 +998,46 @@ const AddNewAuction = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển*: </label>
                                 <div className="col-sm-6">
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng nhanh</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row">
-                                        <div className="col-sm-4">Nhận hàng tại shop</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
+                                    {
+                                        !checkSettingDelivery()
+                                            ?
+                                            <div className="invalid-feedback text-left">
+                                                Vui lòng cài đặt vận chuyển cho sản phẩm ở tab "Cài đặt vận chuyển" trước khi tạo sản phẩm.
+                                            </div>
+                                            :
+                                            <>
+                                                {
+                                                    props.settingShippingArray.ghn && props.settingShippingArray.ghn.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng nhanh</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.ghtk && props.settingShippingArray.ghtk.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.local && props.settingShippingArray.local.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row">
+                                                        <div className="col-sm-4">Nhận hàng tại shop</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </>
+                                    }
                                 </div>
                             </div>
 
@@ -1053,6 +1084,7 @@ const AddNewAuction = (props) => {
 export async function getServerSideProps(ctx) {
     let categories = [];
     let brands = [];
+    let settingShippingArray;
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
@@ -1085,8 +1117,12 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
+
                 return {
-                    props: { categories: categories, brands: brands }
+                    props: { categories: categories, brands: brands, settingShippingArray }
                 }
             } catch (err) {
                 console.log(err.message);

@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import api from './../../../utils/backend-api.utils';
 import * as common from './../../../utils/common.utils';
 import * as validate from './../../../utils/validate.utils';
-import { ListProperties, PropertyDefaultAuction } from './../../../models/category.model';
+import { ListProperties, PropertyDefault } from './../../../models/category.model';
 import classNames from 'classnames';
 import cookie from "cookie";
 import { useRouter } from 'next/router';
@@ -14,18 +14,18 @@ import { Calendar } from 'primereact/calendar';
 
 const AuctionDetail = (props) => {
     const router = useRouter();
-    const [ghnChecked, setGHNChecked] = useState(false);
-    const [ghtkChecked, setGHTKChecked] = useState(false);
-    const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories, auction, accept, imagesUrl, info, attr, brands } = props;
-    const [category, setCategory] = useState(auction.category);
+    const { categories, product, accept, imagesUrl, info, attr, brands, deliverArr, settingShippingArray } = props;
+    const [ghnChecked, setGHNChecked] = useState(deliverArr.ghn ? true : false);
+    const [ghtkChecked, setGHTKChecked] = useState(deliverArr.ghtk ? true : false);
+    const [notDeliveryChecked, setNotDeliveryChecked] = useState(deliverArr.local ? true : false);
+    const [category, setCategory] = useState(product.category);
     const [brand, setBrand] = useState(props.brand);
     const [showProperty, setShowProperty] = useState(true);
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(false);
     const [isDeleteLoading, setDeleteLoading] = useState(false);
     const [attributes, setAttributes] = useState(attr);
-    const [propertyDefault, setPropertyDefault] = useState(auction);
+    const [propertyDefault, setPropertyDefault] = useState(product);
     const [information, setInformation] = useState(info);
     const inputCoverImage = useRef(null);
     const image1 = useRef(null);
@@ -152,6 +152,7 @@ const AuctionDetail = (props) => {
             || validate.checkEmptyInput(propertyDefault.width)
             || validate.checkEmptyInput(propertyDefault.weight)
             || validate.checkEmptyInput(propertyDefault.countDown)
+            || (!ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -184,6 +185,11 @@ const AuctionDetail = (props) => {
             formData.append("width", propertyDefault.width);
             formData.append("height", propertyDefault.height);
             formData.append("countDown", propertyDefault.countDown);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
 
             if (images.coverImage)
                 formData.append("image", images.coverImage);
@@ -769,23 +775,6 @@ const AuctionDetail = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countDown" className="col-sm-2 col-form-label">Thời gian đấu giá*: </label>
-                                <div className="col-sm-6">
-                                    <div className="input-group">
-                                        <InputNumber name="countDown" id="countDown" placeholder="Nhập thời gian" onValueChange={(e) => changeInput(e)} value={propertyDefault.countDown}
-                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.countDown) && showError })}
-                                        />
-                                        <span className="input-group-addon">giây</span>
-                                    </div>
-                                    {
-                                        validate.checkEmptyInput(propertyDefault.countDown) && showError &&
-                                        <div className="invalid-feedback text-left">
-                                            Thời gian đấu giá không được rỗng.
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                            <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao (cm)*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
@@ -799,6 +788,23 @@ const AuctionDetail = (props) => {
                                         validate.checkEmptyInput(propertyDefault.height) && showError &&
                                         <div className="invalid-feedback text-left">
                                             Chiều cao lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Thời gian đấu giá*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="height" id="height" placeholder="Nhập chiều cao" onValueChange={(e) => changeInput(e)} value={propertyDefault.countDown}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.countDown) && showError })}
+                                        />
+                                        <span className="input-group-addon">giây</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.countDown) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Thời gian đấu giá phải lớn hơn 0.
                                         </div>
                                     }
                                 </div>
@@ -1047,27 +1053,37 @@ const AuctionDetail = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng nhanh</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row">
-                                        <div className="col-sm-4">Nhận hàng tại shop</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
+
+                                    {
+                                        settingShippingArray.ghn && settingShippingArray.ghn.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng nhanh</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.ghtk && settingShippingArray.ghtk.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.local && settingShippingArray.local.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row">
+                                            <div className="col-sm-4">Nhận hàng tại shop</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
                                 </div>
                             </div>
 
@@ -1150,6 +1166,8 @@ export async function getServerSideProps(ctx) {
                 height: 0,
                 countDown: 0
             }
+            let deliverArr = {};
+            let settingShippingArray = {};
             let accept = false;
             let urlImages = {
                 coverImage: { url: "", id: "" },
@@ -1174,7 +1192,8 @@ export async function getServerSideProps(ctx) {
                         categories.push(categoryItem);
                     })
 
-                    const resProduct = await api.product.getDetail(id, token);
+                    const resProduct = await api.auction.getDetail(id, token);
+                    console.log(resProduct);
                     if (resProduct.status === 200) {
                         if (resProduct.data.code === 200) {
                             const result = resProduct.data.result;
@@ -1198,6 +1217,11 @@ export async function getServerSideProps(ctx) {
                             product.width = result.width || 0;
                             product.height = result.height || 0;
                             product.countDown = result.countDown || 0;
+                            result.deliverArray.forEach(x => {
+                                if (x.ghn) deliverArr["ghn"] = x.ghn;
+                                if (x.ghtk) deliverArr["ghtk"] = x.ghtk;
+                                if (x.local) deliverArr["local"] = x.local;
+                            })
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;
@@ -1243,6 +1267,9 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
             } catch (err) {
                 console.log(err.message);
             }
@@ -1250,13 +1277,15 @@ export async function getServerSideProps(ctx) {
             return {
                 props: {
                     categories: categories,
-                    auction: product,
+                    product: product,
                     accept: accept,
                     imagesUrl: urlImages,
                     info: information,
                     attr: listAttribute,
                     brands: brands,
-                    brand: brand
+                    brand: brand,
+                    deliverArr: deliverArr,
+                    settingShippingArray
                 }
             }
         }

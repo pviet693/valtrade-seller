@@ -20,8 +20,11 @@ const url = {
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
     },
     auction: {
-        postCreate: () => `${baseUrl}/api/bid/createBid`,
-        postUpdate: () => `${baseUrl}/api/bid/update/:id`,
+        postCreate: () => `${baseUrl}/api/bid/create`,
+        getList: () => `${baseUrl}/api/bid/getBySeller`,
+        delete: () => `${baseUrl}/api/bid/delete/:id`,
+        getDetail: () => `${baseUrl}/api/bid/detail/:id`,
+        putUpdate: () => `${baseUrl}/api/bid/update/:id`,
     },
     brand: {
         getList: () => `${baseUrl}/api/brand/get`,

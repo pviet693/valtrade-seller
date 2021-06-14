@@ -108,6 +108,16 @@ const api = {
         }
     },
     auction: {
+        getList: (tokenServer) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    Authorization: `Bearer ${token ? token : tokenServer}`,
+                },
+            }
+            return axios.get(url.auction.getList(), newConfig);
+        },
         postCreate: (body) => {
             if (isEnable()) {
                 const newConfig = {
@@ -118,6 +128,16 @@ const api = {
                     },
                 }
                 return axios.post(url.auction.postCreate(), body, newConfig);
+            }
+        },
+        delete: (id) => {
+            if (isEnable()) {
+                return axios.delete(url.auction.delete().replace(':id', id), config);
+            }
+        },
+        getDetail: (id, tokenSeller) => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.auction.getDetail().replace(':id', id), config);
             }
         },
         putUpdate: (body, id) => {
