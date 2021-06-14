@@ -62,14 +62,22 @@ const AddNewAuction = (props) => {
 
     const changeInput = (e) => {
         const { value, name } = e.target;
-        setPropertyDefault({ ...propertyDefault, [name]: value });
+        setPropertyDefault((preState) => {
+            return {
+                ...preState,
+                [name]: value
+            }
+        })
     }
 
     const onChangeInformation = (e) => {
         const { name, value } = e.target;
-        let temp = information;
-        temp[name] = value;
-        setInformation({ ...temp });
+        setInformation((prevState) => {
+            return {
+                ...prevState,
+                [name]: value
+            }
+        })
     }
 
     const onChangeCategory = async (e) => {
@@ -81,6 +89,9 @@ const AddNewAuction = (props) => {
         }
         setCategory(null);
         setShowProperty(false);
+        setInformation((prevState) => {
+            return {}
+        })
         setCategory(value);
         refLoadingBar.current.continuousStart();
 

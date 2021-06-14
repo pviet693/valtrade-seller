@@ -584,10 +584,10 @@ const ProductDetail = (props) => {
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
                                     <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
-                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category ? category.name : "") && showError })}
                                     />
                                     {
-                                        validate.checkEmptyInput(category.name) && showError &&
+                                        validate.checkEmptyInput(category ? category.name : "") && showError &&
                                         <div className="invalid-feedback text-left">
                                             Danh mục không được trống.
                                         </div>

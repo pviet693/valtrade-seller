@@ -53,14 +53,22 @@ const AuctionDetail = (props) => {
 
     const changeInput = (e) => {
         const { value, name } = e.target;
-        setPropertyDefault({ ...propertyDefault, [name]: value });
+        setPropertyDefault((preState) => {
+            return {
+                ...preState,
+                [name]: value
+            }
+        })
     }
 
     const onChangeInformation = (e) => {
         const { name, value } = e.target;
-        let temp = information;
-        temp[name] = value;
-        setInformation({ ...temp });
+        setInformation((prevState) => {
+            return {
+                ...prevState,
+                [name]: value
+            }
+        })
     }
 
     const onChangeCategory = async (e) => {
@@ -72,6 +80,9 @@ const AuctionDetail = (props) => {
         }
         setCategory(null);
         setShowProperty(false);
+        setInformation((prevState) => {
+            return {}
+        })
         setCategory(value);
         refLoadingBar.current.continuousStart();
 
@@ -586,10 +597,10 @@ const AuctionDetail = (props) => {
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
                                     <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
-                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category ? category.name || "" : "") && showError })}
                                     />
                                     {
-                                        validate.checkEmptyInput(category.name) && showError &&
+                                        validate.checkEmptyInput(category ? category.name || "" : "") && showError &&
                                         <div className="invalid-feedback text-left">
                                             Danh mục không được trống.
                                         </div>
@@ -1196,7 +1207,6 @@ export async function getServerSideProps(ctx) {
                     if (resProduct.status === 200) {
                         if (resProduct.data.code === 200) {
                             const result = resProduct.data.result;
-                            console.log(result);
                             brand.id = result.brand ? (result.brand._id || "") : "";
                             brand.name = result.brand ? (result.brand.name || "") : "";
                             product.id = result._id || "";
