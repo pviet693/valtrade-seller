@@ -211,7 +211,7 @@ const AuctionDetail = (props) => {
                 formData.append("image", images.image8);
             formData.append("information", JSON.stringify(information))
 
-            const res = await api.product.putUpdate(formData, propertyDefault.id);
+            const res = await api.auction.putUpdate(formData, propertyDefault.id);
 
             setLoading(false);
             refLoadingBar.current.complete();
@@ -219,7 +219,7 @@ const AuctionDetail = (props) => {
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Cập nhật sản phẩm thành công", "success")
-                        .then(() => router.push('/product'));
+                        .then(() => router.push('/auction'));
                 } else {
                     const message = res.data.message || "Cập nhật sản phẩm thất bại";
                     common.Toast(message, "error");
@@ -240,7 +240,7 @@ const AuctionDetail = (props) => {
                         setDeleteLoading(true);
                         refLoadingBar.current.continuousStart();
 
-                        const res = await api.product.delete(propertyDefault.id);
+                        const res = await api.auction.delete(propertyDefault.id);
 
                         setDeleteLoading(false);
                         refLoadingBar.current.complete();
@@ -248,7 +248,7 @@ const AuctionDetail = (props) => {
                         if (res.status === 200) {
                             if (res.data.code === 200) {
                                 common.Toast('Xóa sản phẩm thành công.', 'success')
-                                    .then(() => router.push('/product'));
+                                    .then(() => router.push('/auction'));
                             } else {
                                 const message = res.data.message || 'Xóa sản phẩm thất bại.';
                                 common.Toast(message, 'error');
@@ -1193,10 +1193,10 @@ export async function getServerSideProps(ctx) {
                     })
 
                     const resProduct = await api.auction.getDetail(id, token);
-                    console.log(resProduct);
                     if (resProduct.status === 200) {
                         if (resProduct.data.code === 200) {
                             const result = resProduct.data.result;
+                            console.log(result);
                             brand.id = result.brand ? (result.brand._id || "") : "";
                             brand.name = result.brand ? (result.brand.name || "") : "";
                             product.id = result._id || "";
@@ -1211,7 +1211,7 @@ export async function getServerSideProps(ctx) {
                             product.sku = result.sku;
                             product.countProduct = result.countProduct;
                             product.note = result.note || "";
-                            product.restWarrantyTime = result.restWarrantyTime;
+                            product.restWarrantyTime = result.restWarrantyTime || (new Date()).toISOString();
                             product.weight = result.weight || 0;
                             product.length = result.length || 0;
                             product.width = result.width || 0;

@@ -72,7 +72,7 @@ const Auction = (props) => {
                     try {
                         refLoadingBar.current.continuousStart();
 
-                        const res = await api.product.delete(id);
+                        const res = await api.auction.delete(id);
 
                         refLoadingBar.current.complete();
 

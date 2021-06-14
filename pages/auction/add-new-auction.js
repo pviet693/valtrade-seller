@@ -228,7 +228,7 @@ const AddNewAuction = (props) => {
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     common.Toast("Tạo sản phẩm thành công", "success")
-                        .then(() => router.push('/product'));
+                        .then(() => router.push('/auction'));
                 } else {
                     const message = res.data.message || "Tạo sản phẩm thất bại";
                     common.Toast(message, "error");
