@@ -6,7 +6,7 @@ import * as common from './common.utils';
 let token = Cookie.get('seller_token');
 
 let config = {
-    headers: { 
+    headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
@@ -107,12 +107,58 @@ const api = {
             }
         }
     },
+    auction: {
+        getList: (tokenServer) => {
+            const newConfig = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    Authorization: `Bearer ${token ? token : tokenServer}`,
+                },
+            }
+            return axios.get(url.auction.getList(), newConfig);
+        },
+        postCreate: (body) => {
+            if (isEnable()) {
+                const newConfig = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Access-Control-Allow-Origin': '*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+                return axios.post(url.auction.postCreate(), body, newConfig);
+            }
+        },
+        delete: (id) => {
+            if (isEnable()) {
+                return axios.delete(url.auction.delete().replace(':id', id), config);
+            }
+        },
+        getDetail: (id, tokenSeller) => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.auction.getDetail().replace(':id', id), config);
+            }
+        },
+        putUpdate: (body, id) => {
+            if (isEnable()) {
+                const newConfig = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Access-Control-Allow-Origin': '*',
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+                return axios.put(url.auction.putUpdate().replace(':id', id), body, newConfig);
+            }
+        }
+    },
     brand: {
         getList: (tokenSeller) => {
             if (isEnable(tokenSeller)) {
                 return axios.get(url.brand.getList(), config);
             }
-        } 
+        }
     },
     deliverySetting: {
         postSetting: (body) => {

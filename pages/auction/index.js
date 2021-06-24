@@ -72,7 +72,7 @@ const Auction = (props) => {
                     try {
                         refLoadingBar.current.continuousStart();
 
-                        const res = await api.product.delete(id);
+                        const res = await api.auction.delete(id);
 
                         refLoadingBar.current.complete();
 
@@ -426,7 +426,7 @@ export async function getServerSideProps(ctx) {
         const token = cookie.parse(cookies).seller_token;
         if (token) {
             try {
-                const res = await api.product.getList(token);
+                const res = await api.auction.getList(token);
                 if (res.status === 200) {
                     if (res.data.code === 200) {
                         res.data.result.forEach(x => {

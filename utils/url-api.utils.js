@@ -19,6 +19,13 @@ const url = {
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
     },
+    auction: {
+        postCreate: () => `${baseUrl}/api/bid/createBid`,
+        getList: () => `${baseUrl}/api/bid/getBySeller`,
+        delete: () => `${baseUrl}/api/bid/delete/:id`,
+        getDetail: () => `${baseUrl}/api/bid/detail/:id`,
+        putUpdate: () => `${baseUrl}/api/bid/update/:id`,
+    },
     brand: {
         getList: () => `${baseUrl}/api/brand/get`,
     },
@@ -30,7 +37,7 @@ const url = {
         getProvince: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province",
         getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
         getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
-    }
+    },
 }
 
 export default url;

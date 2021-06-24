@@ -16,7 +16,7 @@ Moment.locale('en');
 const Product = (props) => {
     const router = useRouter();
     const { products } = props;
-    const [ listProducts, setListProducts ] = useState(products);
+    const [listProducts, setListProducts] = useState(products);
     const [dateFrom, setDateFrom] = useState(null);
     const [dateTo, setDateTo] = useState(null);
     const [dateFilter, setDateFilter] = useState(null);

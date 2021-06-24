@@ -14,10 +14,10 @@ import { Calendar } from 'primereact/calendar';
 
 const ProductDetail = (props) => {
     const router = useRouter();
-    const [ghnChecked, setGHNChecked] = useState(false);
-    const [ghtkChecked, setGHTKChecked] = useState(false);
-    const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
-    const { categories, product, accept, imagesUrl, info, attr, brands } = props;
+    const { categories, product, accept, imagesUrl, info, attr, brands, deliverArr, settingShippingArray } = props;
+    const [ghnChecked, setGHNChecked] = useState(deliverArr.ghn ? true : false);
+    const [ghtkChecked, setGHTKChecked] = useState(deliverArr.ghtk ? true : false);
+    const [notDeliveryChecked, setNotDeliveryChecked] = useState(deliverArr.local ? true : false);
     const [category, setCategory] = useState(product.category);
     const [brand, setBrand] = useState(props.brand);
     const [showProperty, setShowProperty] = useState(true);
@@ -146,6 +146,12 @@ const ProductDetail = (props) => {
             || validate.checkEmptyInput(propertyDefault.countProduct)
             || validate.checkEmptyInput(brand ? brand.name : "")
             || validate.checkEmptyInput(urlImages.coverImage)
+            || !validateImage()
+            || validate.checkEmptyInput(propertyDefault.length)
+            || validate.checkEmptyInput(propertyDefault.height)
+            || validate.checkEmptyInput(propertyDefault.width)
+            || validate.checkEmptyInput(propertyDefault.weight)
+            || (!ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -173,6 +179,16 @@ const ProductDetail = (props) => {
             formData.append("countProduct", propertyDefault.countProduct);
             formData.append("note", propertyDefault.note);
             formData.append("brandId", brand.id);
+            formData.append("weight", propertyDefault.weight);
+            formData.append("length", propertyDefault.length);
+            formData.append("width", propertyDefault.width);
+            formData.append("height", propertyDefault.height);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
+
             if (images.coverImage)
                 formData.append("image", images.coverImage);
             if (images.image1)
@@ -517,6 +533,14 @@ const ProductDetail = (props) => {
         setPropertyDefault(temp);
     }, [])
 
+    const validateImage = () => {
+        let num = 0;
+        Object.keys(urlImages).forEach(x => {
+            num += urlImages[x].url ? 1 : 0;
+        })
+        return num >= 4;
+    }
+
     return (
         <div className="product-detail">
             <Head>
@@ -528,7 +552,7 @@ const ProductDetail = (props) => {
                     Chi tiết sản phẩm
                 </div>
                 <hr />
-                
+
                 <div className="form-input">
                     <div className="form-group row align-items-center d-flex">
                         <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm: </label>
@@ -560,10 +584,10 @@ const ProductDetail = (props) => {
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
                                     <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
-                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category ? category.name : "") && showError })}
                                     />
                                     {
-                                        validate.checkEmptyInput(category.name) && showError &&
+                                        validate.checkEmptyInput(category ? category.name : "") && showError &&
                                         <div className="invalid-feedback text-left">
                                             Danh mục không được trống.
                                         </div>
@@ -694,6 +718,78 @@ const ProductDetail = (props) => {
                                     }
                                 </div>
                             </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Cân nặng (gram)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="weight" id="weight" placeholder="Nhập cân nặng" onValueChange={(e) => changeInput(e)} value={propertyDefault.weight}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.weight) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">gram</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.weight) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Cân nặng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều dài (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="length" id="length" placeholder="Nhập chiều dài" onValueChange={(e) => changeInput(e)} value={propertyDefault.length}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.length) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.length) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều dài lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều rộng (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="width" id="width" placeholder="Nhập chiều rộng" onValueChange={(e) => changeInput(e)} value={propertyDefault.width}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.width) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.width) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều rộng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="height" id="height" placeholder="Nhập chiều cao" onValueChange={(e) => changeInput(e)} value={propertyDefault.height}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.height) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.height) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều cao lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
                             <div className="form-group row">
                                 <label htmlFor="note" className="col-sm-2 col-form-label">Lưu ý: </label>
                                 <div className="col-sm-6">
@@ -704,7 +800,7 @@ const ProductDetail = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh: </label>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh (ít nhất 4 hình ảnh): {!validateImage() && showError && <span className="invalid-feedback text-left">Sản phẩm phải có ít nhất 4 hình ảnh minh họa.</span>}</label>
                                 <div className="col-sm-6 d-flex flex-row flex-wrap">
                                     <div className="d-flex flex-column add-image-container">
                                         <div className={classNames("add-image-box", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
@@ -726,7 +822,7 @@ const ProductDetail = (props) => {
                                             }
                                         </div>
                                         <div className="text-center mt-2">
-                                            Hình ảnh bìa
+                                            Hình ảnh 0
                                         </div>
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
@@ -938,27 +1034,37 @@ const ProductDetail = (props) => {
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng nhanh</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row mb-3">
-                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <div className="d-flex flex-row align-items-center row">
-                                        <div className="col-sm-4">Nhận hàng tại shop</div>
-                                        <label className="fancy-checkbox">
-                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
-                                            <span></span>
-                                        </label>
-                                    </div>
+
+                                    {
+                                        settingShippingArray.ghn && settingShippingArray.ghn.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng nhanh</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.ghtk && settingShippingArray.ghtk.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row mb-3">
+                                            <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
+                                    {
+                                        settingShippingArray.local && settingShippingArray.local.isChoose &&
+                                        <div className="d-flex flex-row align-items-center row">
+                                            <div className="col-sm-4">Nhận hàng tại shop</div>
+                                            <label className="fancy-checkbox">
+                                                <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                <span></span>
+                                            </label>
+                                        </div>
+                                    }
                                 </div>
                             </div>
 
@@ -1035,10 +1141,16 @@ export async function getServerSideProps(ctx) {
                 countProduct: 0,
                 note: "",
                 restWarrantyTime: "",
+                weight: 0,
+                length: 0,
+                width: 0,
+                height: 0
             }
+            let deliverArr = {};
+            let settingShippingArray;
             let accept = false;
             let urlImages = {
-                coverImage: { url: "", id: ""},
+                coverImage: { url: "", id: "" },
                 image1: { url: "", id: "" },
                 image2: { url: "", id: "" },
                 image3: { url: "", id: "" },
@@ -1064,7 +1176,7 @@ export async function getServerSideProps(ctx) {
                     if (resProduct.status === 200) {
                         if (resProduct.data.code === 200) {
                             const result = resProduct.data.result;
-                            brand.id = result.brand ? (result.brand._id || ""): "";
+                            brand.id = result.brand ? (result.brand._id || "") : "";
                             brand.name = result.brand ? (result.brand.name || "") : "";
                             product.id = result._id || "";
                             product.name = result.name || "";
@@ -1079,6 +1191,15 @@ export async function getServerSideProps(ctx) {
                             product.countProduct = result.countProduct;
                             product.note = result.note || "";
                             product.restWarrantyTime = result.restWarrantyTime;
+                            product.weight = result.weight || 0;
+                            product.length = result.length || 0;
+                            product.width = result.width || 0;
+                            product.height = result.height || 0;
+                            result.deliverArray.forEach(x => {
+                                if (x.ghn) deliverArr["ghn"] = x.ghn;
+                                if (x.ghtk) deliverArr["ghtk"] = x.ghtk;
+                                if (x.local) deliverArr["local"] = x.local;
+                            })
                             result.arrayImage.forEach((image, index) => {
                                 if (index === 0) {
                                     urlImages.coverImage.url = image.url;
@@ -1124,21 +1245,26 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
+
+                return {
+                    props: {
+                        categories: categories,
+                        product: product,
+                        accept: accept,
+                        imagesUrl: urlImages,
+                        info: information,
+                        attr: listAttribute,
+                        brands: brands,
+                        brand: brand,
+                        deliverArr: deliverArr,
+                        settingShippingArray
+                    }
+                }
             } catch (err) {
                 console.log(err.message);
-            }
-
-            return {
-                props: { 
-                    categories: categories, 
-                    product: product, 
-                    accept: accept,
-                    imagesUrl: urlImages,
-                    info: information,
-                    attr: listAttribute,
-                    brands: brands,
-                    brand: brand
-                }
             }
         }
         else {

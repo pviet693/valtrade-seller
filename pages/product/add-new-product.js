@@ -19,8 +19,8 @@ const AddNewProduct = (props) => {
     const [ghtkChecked, setGHTKChecked] = useState(false);
     const [notDeliveryChecked, setNotDeliveryChecked] = useState(false);
     const { categories, brands } = props;
-    const [category, setCategory] = useState({ id: "", name: ""});
-    const [brand, setBrand] = useState({ id: "", name: "" });
+    const [category, setCategory] = useState(null);
+    const [brand, setBrand] = useState(null);
     const [showProperty, setShowProperty] = useState(false);
     const [showError, setShowError] = useState(false);
     const [isLoading, setLoading] = useState(false);
@@ -156,7 +156,13 @@ const AddNewProduct = (props) => {
             || validate.checkEmptyInput(propertyDefault.restWarrantyTime)
             || validate.checkEmptyInput(propertyDefault.countProduct)
             || validate.checkEmptyInput(brand ? brand.name : "")
-            || validate.checkEmptyInput(urlImages.coverImage)
+            || !validateImage()
+            || validate.checkEmptyInput(propertyDefault.length)
+            || validate.checkEmptyInput(propertyDefault.height)
+            || validate.checkEmptyInput(propertyDefault.width)
+            || validate.checkEmptyInput(propertyDefault.weight)
+            || !checkSettingDelivery()
+            || (checkSettingDelivery() && !ghnChecked && !ghtkChecked && !notDeliveryChecked)
         ) {
             return;
         }
@@ -184,6 +190,16 @@ const AddNewProduct = (props) => {
             formData.append("countProduct", propertyDefault.countProduct);
             formData.append("note", propertyDefault.note);
             formData.append("brandId", brand.id);
+            formData.append("weight", propertyDefault.weight);
+            formData.append("length", propertyDefault.length);
+            formData.append("width", propertyDefault.width);
+            formData.append("height", propertyDefault.height);
+            let delivery = [];
+            if (ghnChecked) delivery.push({ ghn: props.settingShippingArray.ghn });
+            if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
+            if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
+            formData.append("deliverArray", JSON.stringify(delivery));
+
             if (images.coverImage)
                 formData.append("image", images.coverImage);
             if (images.image1)
@@ -214,6 +230,7 @@ const AddNewProduct = (props) => {
                 lstDelivery.push(ListDelivery[2]);
             }
             formData.append("ship", JSON.stringify(lstDelivery));
+
             const res = await api.product.postCreate(formData);
 
             setLoading(false);
@@ -480,6 +497,17 @@ const AddNewProduct = (props) => {
             setNotDeliveryChecked(e.target.checked);
         }
         
+    const validateImage = () => {
+        let num = 0;
+        Object.keys(urlImages).forEach(x => {
+            num += urlImages[x] ? 1 : 0;
+        })
+        return num >= 4;
+    }
+
+    const checkSettingDelivery = () => {
+        return !(!props.settingShippingArray || (!props.settingShippingArray.ghn && !props.settingShippingArray.ghtk && !props.settingShippingArray.local)
+            || (!props.settingShippingArray.local.isChoose && !props.settingShippingArray.ghn.isChoose && !props.settingShippingArray.ghtk.isChoose));
     }
 
     return (
@@ -496,7 +524,7 @@ const AddNewProduct = (props) => {
 
                 <div className="form-input">
                     <div className="form-group row align-items-center d-flex">
-                        <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm: </label>
+                        <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm*:</label>
                         <div className="col-sm-6">
                             <div className="input-group">
                                 <input className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.name) || (propertyDefault.name.length > 200)) && showError })} name="name" id="name" placeholder="Nhập tên sản phẩm" type="text" onChange={changeInput} value={propertyDefault.name} />
@@ -518,17 +546,17 @@ const AddNewProduct = (props) => {
                     </div>
                     <div className="select-category">
                         <div className="select-category-title">
-                            Chọn danh mục sản phẩm
+                            Chọn danh mục sản phẩm*:
                         </div>
                         <div className="select-category-content">
                             <div className="align-items-center d-flex input-category row">
                                 <label htmlFor="category" className="col-sm-2 col-form-label">Chọn danh mục: </label>
                                 <div className="col-sm-6 px-0">
-                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category" 
-                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category.name) && showError })}
+                                    <Dropdown value={category} options={categories} onChange={onChangeCategory} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn danh mục" id="category"
+                                        className={classNames({ 'p-invalid': validate.checkEmptyInput(category ? category.name : "") && showError })}
                                     />
                                     {
-                                        validate.checkEmptyInput(category.name) && showError &&
+                                        validate.checkEmptyInput(category ? category.name : "") && showError &&
                                         <div className="invalid-feedback text-left">
                                             Danh mục không được trống.
                                         </div>
@@ -550,7 +578,7 @@ const AddNewProduct = (props) => {
                         showProperty &&
                         <div>
                             <div className="form-group row">
-                                <label htmlFor="description" className="col-sm-2 col-form-label">Mô tả sản phẩm </label>
+                                <label htmlFor="description" className="col-sm-2 col-form-label">Mô tả sản phẩm*: </label>
                                 <div className="col-sm-6">
                                     <textarea className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(propertyDefault.description) || (propertyDefault.description.length > 3000)) && showError })} placeholder="Mô tả sản phẩm" rows="8" name="description" id="description" onChange={changeInput} value={propertyDefault.description}></textarea>
                                     {
@@ -572,14 +600,14 @@ const AddNewProduct = (props) => {
                             </div>
 
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="price" className="col-sm-2 col-form-label">Giá bán: </label>
+                                <label htmlFor="price" className="col-sm-2 col-form-label">Giá bán*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
                                         <InputNumber name="price" id="price" placeholder="Nhập giá sản phẩm" onValueChange={(e) => changeInput(e)} value={propertyDefault.price}
                                             className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.price) && showError })}
                                         />
                                         <span className="input-group-addon">vnđ</span>
-                                    </div> 
+                                    </div>
                                     {
                                         validate.checkEmptyInput(propertyDefault.price) && showError &&
                                         <div className="invalid-feedback text-left">
@@ -589,10 +617,10 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua ban đầu: </label>
+                                <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua ban đầu*: </label>
                                 <div className="col-sm-6">
                                     <div className="input-group">
-                                        <InputNumber name="oldPrice" id="oldPrice" placeholder="Nhập giá mua ban đầu" onValueChange={(e) => changeInput(e)} value={propertyDefault.oldPrice} 
+                                        <InputNumber name="oldPrice" id="oldPrice" placeholder="Nhập giá mua ban đầu" onValueChange={(e) => changeInput(e)} value={propertyDefault.oldPrice}
                                             className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.oldPrice) && showError })}
                                         />
                                         <span className="input-group-addon">vnđ</span>
@@ -600,15 +628,15 @@ const AddNewProduct = (props) => {
                                     {
                                         validate.checkEmptyInput(propertyDefault.oldPrice) && showError &&
                                         <div className="invalid-feedback text-left">
-                                            Giá bán không được trống.
+                                            Giá mua không được trống.
                                         </div>
                                     }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex input-brand">
-                                <label htmlFor="brand" className="col-sm-2 col-form-label">Chọn thương hiệu: </label>
+                                <label htmlFor="brand" className="col-sm-2 col-form-label">Chọn thương hiệu*: </label>
                                 <div className="col-sm-6">
-                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand" 
+                                    <Dropdown value={brand} options={brands} onChange={onChangeBrand} optionLabel="name" filter showClear filterBy="name" placeholder="Chọn thương hiệu" id="brand"
                                         className={classNames({ 'p-invalid': validate.checkEmptyInput(brand ? brand.name : "") && showError })}
                                     />
                                     {
@@ -620,7 +648,7 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="sku" className="col-sm-2 col-form-label">SKU: </label>
+                                <label htmlFor="sku" className="col-sm-2 col-form-label">SKU*: </label>
                                 <div className="col-sm-6">
                                     <input className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(propertyDefault.sku) && showError })} placeholder="Nhập sku" type="text" name="sku" id="=sku" onChange={changeInput} value={propertyDefault.sku} />
                                     {
@@ -632,29 +660,101 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Ngày hết hạn bảo hành: </label>
+                                <label htmlFor="restWarrantyTime" className="col-sm-2 col-form-label">Ngày hết hạn bảo hành*: </label>
                                 <div className="col-sm-6">
-                                    <Calendar id="date" value={propertyDefault.restWarrantyTime} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime" 
+                                    <Calendar id="date" value={propertyDefault.restWarrantyTime} onChange={changeInput} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon placeholder="Ngày hết hạn bảo hành" name="restWarrantyTime" id="restWarrantyTime"
                                         className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError })}
                                     />
                                     {
                                         validate.checkEmptyInput(propertyDefault.restWarrantyTime) && showError &&
                                         <div className="invalid-feedback text-left">
-                                            SKU không được trống.
+                                            Ngày hết hạn bảo hành không được trống.
                                         </div>
                                     }
                                 </div>
                             </div>
                             <div className="form-group row align-items-center d-flex">
-                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Số lượng: </label>
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Số lượng*: </label>
                                 <div className="col-sm-6">
-                                    <input placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct} 
+                                    <input placeholder="Nhập số lượng sản phẩm" type="number" name="countProduct" id="=countProduct" onChange={changeInput} value={propertyDefault.countProduct}
                                         className={classNames('form-control', { 'is-invalid': validate.checkEmptyInput(propertyDefault.countProduct) && showError })}
                                     />
                                     {
                                         validate.checkEmptyInput(propertyDefault.countProduct) && showError &&
                                         <div className="invalid-feedback text-left">
                                             Số lượng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Cân nặng (gram)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="weight" id="weight" placeholder="Nhập cân nặng" onValueChange={(e) => changeInput(e)} value={propertyDefault.weight}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.weight) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">gram</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.weight) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Cân nặng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều dài (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="length" id="length" placeholder="Nhập chiều dài" onValueChange={(e) => changeInput(e)} value={propertyDefault.length}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.length) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.length) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều dài lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều rộng (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="width" id="width" placeholder="Nhập chiều rộng" onValueChange={(e) => changeInput(e)} value={propertyDefault.width}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.width) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.width) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều rộng lớn hơn 0.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="countProduct" className="col-sm-2 col-form-label">Chiều cao (cm)*: </label>
+                                <div className="col-sm-6">
+                                    <div className="input-group">
+                                        <InputNumber name="height" id="height" placeholder="Nhập chiều cao" onValueChange={(e) => changeInput(e)} value={propertyDefault.height}
+                                            className={classNames({ 'p-invalid': validate.checkEmptyInput(propertyDefault.height) && showError })}
+                                            mode="decimal" minFractionDigits={1} maxFractionDigits={2}
+                                        />
+                                        <span className="input-group-addon">cm</span>
+                                    </div>
+                                    {
+                                        validate.checkEmptyInput(propertyDefault.height) && showError &&
+                                        <div className="invalid-feedback text-left">
+                                            Chiều cao lớn hơn 0.
                                         </div>
                                     }
                                 </div>
@@ -669,14 +769,14 @@ const AddNewProduct = (props) => {
                                 </div>
                             </div>
                             <div className="form-group row">
-                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh: </label>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Hình ảnh (ít nhất 4 hình ảnh): {!validateImage() && showError && <span className="invalid-feedback text-left">Sản phẩm phải có ít nhất 4 hình ảnh minh họa.</span>}</label>
                                 <div className="col-sm-6 d-flex flex-row flex-wrap">
                                     <div className="d-flex flex-column add-image-container">
-                                        <div className={classNames("add-image-box", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
+                                        <div className={classNames("add-image-box")}>
                                             {
                                                 urlImages.coverImage === "" &&
                                                 <>
-                                                    <div className={classNames("add-image-circle", { "invalid-image": validate.checkEmptyInput(urlImages.coverImage) && showError })}>
+                                                    <div className={classNames("add-image-circle")}>
                                                         <input type="file" accept="image/*" ref={inputCoverImage} onChange={selectCoverImage} />
                                                         <i className="fa fa-plus" aria-hidden onClick={addCoverImage}></i>
                                                     </div>
@@ -691,7 +791,7 @@ const AddNewProduct = (props) => {
                                             }
                                         </div>
                                         <div className="text-center mt-2">
-                                            Hình ảnh bìa
+                                            Hình ảnh 0
                                         </div>
                                     </div>
                                     <div className="d-flex flex-column add-image-container mb-4">
@@ -925,6 +1025,49 @@ const AddNewProduct = (props) => {
                                         </label>
                                     </div>
                                 </form>
+                                <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển*: </label>
+                                <div className="col-sm-6">
+                                    {
+                                        !checkSettingDelivery()
+                                            ?
+                                            <div className="invalid-feedback text-left">
+                                                Vui lòng cài đặt vận chuyển cho sản phẩm ở tab "Cài đặt vận chuyển" trước khi tạo sản phẩm.
+                                            </div>
+                                            :
+                                            <>
+                                                {
+                                                    props.settingShippingArray.ghn && props.settingShippingArray.ghn.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng nhanh</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHNChecked(!ghnChecked)} checked={ghnChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.ghtk && props.settingShippingArray.ghtk.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row mb-3">
+                                                        <div className="col-sm-4">Giao hàng tiết kiệm</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setGHTKChecked(!ghtkChecked)} checked={ghtkChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                                {
+                                                    props.settingShippingArray.local && props.settingShippingArray.local.isChoose &&
+                                                    <div className="d-flex flex-row align-items-center row">
+                                                        <div className="col-sm-4">Nhận hàng tại shop</div>
+                                                        <label className="fancy-checkbox">
+                                                            <input type="checkbox" onChange={() => setNotDeliveryChecked(!notDeliveryChecked)} checked={notDeliveryChecked} />
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                }
+                                            </>
+                                    }
+                                </div>
                             </div>
 
                             {
@@ -932,7 +1075,7 @@ const AddNewProduct = (props) => {
                                     return (
 
                                         <div className="form-group row align-items-center d-flex" key={x.key}>
-                                            <label htmlFor={x.key} className="col-sm-2 col-form-label">{`${x.name}:`}</label>
+                                            <label htmlFor={x.key} className="col-sm-2 col-form-label">{`${x.name}*:`}</label>
                                             <div className="col-sm-6">
                                                 <input
                                                     className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(information[x.key]) && showError })}
@@ -970,6 +1113,7 @@ const AddNewProduct = (props) => {
 export async function getServerSideProps(ctx) {
     let categories = [];
     let brands = [];
+    let settingShippingArray;
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
@@ -1002,8 +1146,12 @@ export async function getServerSideProps(ctx) {
                         })
                     }
                 }
+
+                const getListShip = await api.deliverySetting.getListShip(token);
+                settingShippingArray = getListShip.data.result;
+
                 return {
-                    props: { categories: categories, brands: brands }
+                    props: { categories: categories, brands: brands, settingShippingArray }
                 }
             } catch (err) {
                 console.log(err.message);

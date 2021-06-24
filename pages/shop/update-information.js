@@ -8,273 +8,22 @@ import api from './../../utils/backend-api.utils';
 import * as common from './../../utils/common.utils';
 import cookie from "cookie";
 
-const ShippingSetting = ({ provinces, settings }) => {
+const UpdateInformationShop = () => {
     const refLoadingBar = useRef(null);
 
-    const [activeGHN, setActiveGHN] = useState(0);
-    const [activeGHTK, setActiveGHTK] = useState(0);
-    const [activeLocal, setActiveLocal] = useState(0);
-
-    const [province, setProvince] = useState(null);
-    const [districts, setDistricts] = useState([]);
-    const [district, setDistrict] = useState(null);
-    const [wards, setWards] = useState([]);
-    const [ward, setWard] = useState(null);
-    const [street, setStreet] = useState("");
-
-    const [provinceGHTK, setProvinceGHTK] = useState(null);
-    const [districtsGHTK, setDistrictsGHTK] = useState([]);
-    const [districtGHTK, setDistrictGHTK] = useState(null);
-    const [wardsGHTK, setWardsGHTK] = useState([]);
-    const [wardGHTK, setWardGHTK] = useState(null);
-    const [streetGHTK, setStreetGHTK] = useState("");
-
-    const [addressLocal, setAddressLocal] = useState("");
-
-    const [loading, setLoading] = useState(false);
-    const [loadingGHTK, setLoadingGHTK] = useState(false);
-    const [loadingLocal, setLoadingLocal] = useState(false);
-
-    const [disableGHN, setDisableGHN] = useState(false);
-    const [disableGHTK, setDisableGHTK] = useState(false);
-
-    const onChangeProvince = async (e) => {
-        setProvince(e.value);
-        setDistrict(null);
-        setWard(null);
-
-        try {
-            const res = await api.ghn.getDistrict(e.value.ProvinceID);
-            setDistricts(res.data.data);
-        } catch (error) {
-            common.Toast(error, 'error');
-        }
-    }
-
-    const onChangeDistrict = async (e) => {
-        setDistrict(e.value);
-        setWard(null);
-
-        try {
-            const res = await api.ghn.getWard(e.value.DistrictID);
-            setWards(res.data.data);
-        } catch (error) {
-            common.Toast(error, 'error');
-        }
-    }
-
-    const onChangeProvinceGHTK = async (e) => {
-        setProvinceGHTK(e.value);
-        setDistrictGHTK(null);
-        setWardGHTK(null);
-
-        try {
-            const res = await api.ghn.getDistrict(e.value.ProvinceID);
-            setDistrictsGHTK(res.data.data);
-        } catch (error) {
-            common.Toast(error, 'error');
-        }
-    }
-
-    const onChangeDistrictGHTK = async (e) => {
-        setDistrictGHTK(e.value);
-        setWardGHTK(null);
-
-        try {
-            const res = await api.ghn.getWard(e.value.DistrictID);
-            setWardsGHTK(res.data.data);
-        } catch (error) {
-            common.Toast(error, 'error');
-        }
-    }
-
-    const saveGHN = async () => {
-        try {
-            setLoading(true);
-            refLoadingBar.current.continuousStart();
-
-            let ghn = null;
-
-            if (province && district && ward && street) {
-                ghn = !disableGHN
-                    ?
-                    {
-                        province: {
-                            province_id: province.ProvinceID,
-                            name: province.ProvinceName
-                        },
-                        district: {
-                            district_id: district.DistrictID,
-                            name: district.DistrictName
-                        },
-                        ward: {
-                            ward_code: ward.WardCode,
-                            name: ward.WardName
-                        },
-                        isChoose: activeGHN === 1 ? true : false,
-                        street: street
-                    }
-                    :
-                    {
-                        isChoose: activeGHN === 1 ? true : false,
-                    }
-            } else {
-                return;
-            }
-
-            let body = {};
-
-            if (ghn) { body["ghn"] = ghn; }
-
-            const res = await api.deliverySetting.postSetting(body);
-            setLoading(false);
-            refLoadingBar.current.complete();
-            if (res.status === 200) {
-                common.Toast('Lưu thành công', 'success')
-                    .then(() => setDisableGHN(true));
-            }
-        } catch (error) {
-            setLoading(false);
-            refLoadingBar.current.complete();
-            console.log(error);
-        }
-    }
-
-    const saveGHTK = async () => {
-        try {
-            setLoadingGHTK(true);
-            refLoadingBar.current.continuousStart();
-
-            let ghtk = null;
-
-            if (provinceGHTK && districtGHTK && wardGHTK && streetGHTK) {
-                ghtk = !disableGHTK
-                    ?
-                    {
-                        pick_province: provinceGHTK.ProvinceName,
-                        pick_district: districtGHTK.DistrictName,
-                        pick_ward: wardGHTK.WardName,
-                        isChoose: activeGHTK === 1 ? true : false,
-                        street: streetGHTK
-                    }
-                    :
-                    {
-                        isChoose: activeGHTK === 1 ? true : false
-                    }
-            } else {
-                return;
-            }
-
-            let body = {};
-
-            if (ghtk) { body["ghtk"] = ghtk; }
-
-            const res = await api.deliverySetting.postSetting(body);
-            setLoadingGHTK(false);
-            refLoadingBar.current.complete();
-            if (res.status === 200) {
-                common.Toast('Lưu thành công.', 'success')
-                    .then(() => setDisableGHTK(true));
-            }
-        } catch (error) {
-            setLoadingGHTK(false);
-            refLoadingBar.current.complete();
-            console.log(error);
-        }
-    }
-
-    const saveLocal = async () => {
-        try {
-            setLoadingLocal(true);
-            refLoadingBar.current.continuousStart();
-
-            let local = null;
-
-            if (addressLocal) {
-                local = {
-                    address: addressLocal,
-                    isChoose: activeLocal === 1 ? true : false
-                }
-            } else {
-                return;
-            }
-
-            let body = {};
-
-            if (local) { body["local"] = local; }
-
-            const res = await api.deliverySetting.postSetting(body);
-            setLoadingLocal(false);
-            refLoadingBar.current.complete();
-            if (res.status === 200) {
-                common.Toast('Lưu thành công.', 'success');
-            }
-        } catch (error) {
-            setLoadingLocal(false);
-            refLoadingBar.current.complete();
-            console.log(error);
-        }
-    }
-
-    const initValue = async () => {
-        if (settings) {
-            console.log(settings);
-            if (settings.ghn) {
-                try {
-                    const resDistrict = await api.ghn.getDistrict(settings.ghn.province.province_id);
-                    setDistricts([...resDistrict.data.data]);
-
-                    const resWard = await api.ghn.getWard(settings.ghn.district.district_id);
-                    setWards([...resWard.data.data]);
-
-                    setProvince(provinces.filter(x => x.ProvinceID === settings.ghn.province.province_id)[0]);
-                    setDistrict(resDistrict.data.data.filter(x => x.DistrictID === settings.ghn.district.district_id)[0]);
-                    setWard(resWard.data.data.filter(x => x.WardCode === settings.ghn.ward.ward_code)[0]);
-                    setStreet(settings.ghn.street);
-                    setActiveGHN(settings.ghn.isChoose ? 1 : 0);
-                } catch (error) {
-                    common.Toast(error, 'error');
-                }
-                setDisableGHN(true);
-            }
-
-            if (settings.ghtk) {
-                try {
-                    setProvinceGHTK(settings.ghtk.pick_province);
-                    setDistrictGHTK(settings.ghtk.pick_district);
-                    setWardGHTK(settings.ghtk.pick_ward);
-                    setStreetGHTK(settings.ghtk.street);
-                    setActiveGHTK(settings.ghtk.isChoose ? 1 : 0);
-                } catch (error) {
-                    common.Toast(error, 'error');
-                }
-                setDisableGHTK(true);
-            }
-
-            if (settings.local) {
-                setAddressLocal(settings.local.address);
-                setActiveLocal(settings.local.isChoose ? 1 : 0);
-            }
-        }
-    }
-
-    useEffect(() => {
-        initValue();
-    }, [])
-
     return (
-        <div className="shipping">
+        <div className="shop">
             <Head>
                 <title>Cài đặt vận chuyển</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} onLoaderFinished={() => { }} />
-            <div className="shipping-container">
+            <div className="shop-container">
                 <div className="title">
-                    Cài đặt vận chuyển
+                    Cập nhật thông tin shop
                 </div>
                 <hr />
 
-                <div className="shipping-setting-row">
+                {/* <div className="shipping-setting-row">
                     <div className="setting-row-header">Giao hàng nhanh</div>
                     <div className="setting-row-container">
                         <Switch
@@ -596,53 +345,14 @@ const ShippingSetting = ({ provinces, settings }) => {
                             }
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     )
 }
 
-export async function getServerSideProps(ctx) {
-    const cookies = ctx.req.headers.cookie;
-    if (cookies) {
-        const token = cookie.parse(cookies).seller_token;
-        if (token) {
-            let provinces = [];
-            let settings = null;
+// export async function getServerSideProps(ctx) {
+    
+// }
 
-            try {
-                const getProvince = await api.ghn.getProvince();
-                provinces = getProvince.data.data;
-
-                const getListShip = await api.deliverySetting.getListShip(token);
-                settings = getListShip.data.result;
-            } catch (error) {
-                console.log(error)
-            }
-
-            return {
-                props: {
-                    provinces: provinces,
-                    settings: settings
-                }
-            }
-        }
-        else {
-            return {
-                redirect: {
-                    destination: '/signin',
-                    permanent: false,
-                },
-            }
-        }
-    } else {
-        return {
-            redirect: {
-                destination: '/signin',
-                permanent: false,
-            },
-        }
-    }
-}
-
-export default ShippingSetting
+export default UpdateInformationShop

@@ -33,7 +33,7 @@ export const ListProperties = [
     { name: "Ống quần", key: "legs" },
     { name: "Chiều dài ống", key: "pantsLength" },
     { name: "Loại quần", key: "pantsType" },
-    { name: "Độ tuổi phù hợp", key: "pantsType" },
+    { name: "Độ tuổi phù hợp", key: "suitableAge" },
     { name: "Hạn sử dụng", key: "expireDay" },
     { name: "Kiểu dáng", key: "style" },
     { name: "Họa tiết", key: "vignette" },
@@ -69,5 +69,29 @@ export class PropertyDefault {
         this.note = "";
         this.brand = "";
         this.restWarrantyTime = 0;
+        this.width = 0;
+        this.weight = 0;
+        this.length = 0;
+        this.height = 0;
+    }
+}
+
+export class PropertyDefaultAuction {
+    constructor() {
+        this.name = "";
+        this.description = "";
+        this.categoryId = "";
+        this.price = 0;
+        this.oldPrice = 0;
+        this.sku = "";
+        this.countProduct = 0;
+        this.note = "";
+        this.brand = "";
+        this.restWarrantyTime = 0;
+        this.width = 0;
+        this.weight = 0;
+        this.length = 0;
+        this.height = 0;
+        this.countDown = 0;
     }
 }
