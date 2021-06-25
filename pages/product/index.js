@@ -15,7 +15,7 @@ Moment.locale('en');
 
 const Product = (props) => {
     const router = useRouter();
-    const { products } = props;
+    const { products, total } = props;
     const [listProducts, setListProducts] = useState(products);
     const [dateFrom, setDateFrom] = useState(null);
     const [dateTo, setDateTo] = useState(null);
@@ -113,18 +113,18 @@ const Product = (props) => {
             <LoadingBar color="#00ac96" ref={refLoadingBar} />
             <div className="custom-tabs-line tabs-line-bottom">
                 <ul className="nav" role="tablist">
-                    <li className="active"><a href="#all-product" role="tab" data-toggle="tab">Tất cả <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#on-sale-product" role="tab" data-toggle="tab">Đang bán <span className="badge bg-danger">7</span></a></li>
+                    <li className="active"><a href="#all-product" role="tab" data-toggle="tab">Tất cả <span className="badge bg-danger">{total}</span></a></li>
+                    {/* <li><a href="#on-sale-product" role="tab" data-toggle="tab">Đang bán <span className="badge bg-danger">7</span></a></li>
                     <li><a href="#sold-product" role="tab" data-toggle="tab">Đã bán <span className="badge bg-danger">7</span></a></li>
                     <li><a href="#out-stock-product" role="tab" data-toggle="tab">Hết hàng <span className="badge bg-danger">7</span></a></li>
                     <li><a href="#hidden-product" role="tab" data-toggle="tab">Tạm ẩn <span className="badge bg-danger">7</span></a></li>
-                    <li><a href="#lock-product" role="tab" data-toggle="tab">Tạm khóa <span className="badge bg-danger">7</span></a></li>
+                    <li><a href="#lock-product" role="tab" data-toggle="tab">Tạm khóa <span className="badge bg-danger">7</span></a></li> */}
                 </ul>
                 <hr />
                 <div className="tab-content">
                     {/* All product */}
                     <div className="tab-pane fade in active" id="all-product">
-                        <form>
+                        {/* <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
                                 <div className="col-sm-6">
@@ -154,7 +154,7 @@ const Product = (props) => {
                                     <Calendar value={dateTo} onChange={(e) => setDateTo(e.value)} dateFormat="dd/mm/yy" showIcon placeholder="dd/mm/yyyy" readOnlyInput id="date-to" />
                                 </div>
                             </div>
-                        </form>
+                        </form> */}
 
                         <div className="table-list-product">
                             <DataTable value={listProducts}
@@ -172,7 +172,7 @@ const Product = (props) => {
                     </div>
 
                     {/* On sale product */}
-                    <div className="tab-pane fade in" id="on-sale-product">
+                    {/* <div className="tab-pane fade in" id="on-sale-product">
                         <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
@@ -218,10 +218,10 @@ const Product = (props) => {
                                 <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={actionFilterElement} filter filterMatchMode="custom" />
                             </DataTable>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Sold product */}
-                    <div className="tab-pane fade in" id="sold-product">
+                    {/* <div className="tab-pane fade in" id="sold-product">
                         <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
@@ -267,10 +267,10 @@ const Product = (props) => {
                                 <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={actionFilterElement} filter filterMatchMode="custom" />
                             </DataTable>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Out of stock product */}
-                    <div className="tab-pane fade in" id="out-stock-product">
+                    {/* <div className="tab-pane fade in" id="out-stock-product">
                         <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
@@ -316,10 +316,10 @@ const Product = (props) => {
                                 <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={actionFilterElement} filter filterMatchMode="custom" />
                             </DataTable>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Hidden product */}
-                    <div className="tab-pane fade in" id="hidden-product">
+                    {/* <div className="tab-pane fade in" id="hidden-product">
                         <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
@@ -365,10 +365,10 @@ const Product = (props) => {
                                 <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={actionFilterElement} filter filterMatchMode="custom" />
                             </DataTable>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Lock product */}
-                    <div className="tab-pane fade in" id="lock-product">
+                    {/* <div className="tab-pane fade in" id="lock-product">
                         <form>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Tên sản phẩm</label>
@@ -414,7 +414,7 @@ const Product = (props) => {
                                 <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={actionFilterElement} filter filterMatchMode="custom" />
                             </DataTable>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 
@@ -424,6 +424,7 @@ const Product = (props) => {
 
 export async function getServerSideProps(ctx) {
     let products = [];
+    let total = 0;
     const cookies = ctx.req.headers.cookie;
     if (cookies) {
         const token = cookie.parse(cookies).seller_token;
@@ -432,19 +433,25 @@ export async function getServerSideProps(ctx) {
                 const res = await api.product.getList(token);
                 if (res.status === 200) {
                     if (res.data.code === 200) {
-                        res.data.result.forEach(x => {
+                        total = res.data.total;
+                        const result = res.data.result;
+                        result.forEach(x => {
                             let obj = {
                                 name: "",
                                 category: "",
                                 date: "",
                                 price: "",
-                                id: ""
+                                id: "",
+                                reject: false,
+                                accept: false,
                             }
                             obj.id = x._id;
                             obj.name = x.name;
                             obj.category = x.categoryInfor.name;
                             obj.date = Moment(x.timePost).format("DD/MM/yyyy");
                             obj.price = x.price;
+                            obj.accept = x.accept || false;
+                            obj.reject = x.reject || false
                             products.push(obj);
                         })
                     }
@@ -454,7 +461,7 @@ export async function getServerSideProps(ctx) {
             }
 
             return {
-                props: { products: products }
+                props: { products, total }
             }
         } else {
             return {
