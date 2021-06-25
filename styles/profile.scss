@@ -1,0 +1,61 @@
+.profile-container {
+    width: 100%;
+    height: 100%;
+    color: #566374;
+    background: #fff;
+    padding: 30px 40px;
+    margin: 20px 10px !important;
+    
+    .profile-title {
+        font-size: 1.4em;
+        font-weight: 500;
+        color: #566374;
+    }
+
+    .profile-content {
+        background: #fff;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+        font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+        height: auto;
+        width: 100%;
+        
+        .profile-content-row {
+            width: 100%;
+            height: auto;
+            padding: 20px;
+            margin-bottom: 20px;
+
+            .information-box {
+                width: 100%;
+                height: auto;
+                background-color: rgba($color: #000000, $alpha: 0.01);
+                border: 1px dotted rgba($color: #000000, $alpha: 0.1);
+                padding: 20px;
+            }
+
+            .btn-close {
+                color: #fff;
+                box-sizing: content-box;
+                width: 1em;
+                height: 1em;
+                background: red url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+                border: 0;
+                border-radius: .25rem;
+                opacity: .5;
+                padding: unset;
+                height: 30px;
+                width: 30px;
+                text-align: center;
+            }
+
+            .btn-edit {
+                padding: unset;
+                height: 30px;
+                width: 30px;
+                text-align: center;
+            }
+        }
+    }
+
+    
+}

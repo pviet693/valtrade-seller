@@ -18,6 +18,7 @@ import '../styles/auction/auction-add-new.scss';
 import '../styles/auction/auction-detail.scss';
 import '../styles/delivery-setting.scss';
 import '../styles/update-information-shop.scss';
+import '../styles/profile.scss';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { DataProvider } from '../store/GlobalState';
