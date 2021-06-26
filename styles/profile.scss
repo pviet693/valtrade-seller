@@ -1,61 +1,167 @@
-.profile-container {
+.profile {
     width: 100%;
     height: 100%;
     color: #566374;
-    background: #fff;
-    padding: 30px 40px;
-    margin: 20px 10px !important;
-    
-    .profile-title {
-        font-size: 1.4em;
-        font-weight: 500;
-        color: #566374;
-    }
+    padding: 30px 20px 20px;
 
-    .profile-content {
-        background: #fff;
-        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
-        font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
-        height: auto;
+    .profile-container {
         width: 100%;
-        
-        .profile-content-row {
-            width: 100%;
-            height: auto;
-            padding: 20px;
-            margin-bottom: 20px;
+        height: 100%;
+        min-height: calc(100vh - 135px);
+        color: #566374;
+        background: #fff;
+        padding: 20px;
 
-            .information-box {
+        .profile-title {
+            font-size: 1.4em;
+            font-weight: 500;
+            color: #566374;
+        }
+
+        .profile-content {
+            background: #fff;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+            font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue",
+                "Lucida Grande", sans-serif;
+            height: auto;
+            width: 100%;
+
+            .profile-content-row {
                 width: 100%;
                 height: auto;
-                background-color: rgba($color: #000000, $alpha: 0.01);
-                border: 1px dotted rgba($color: #000000, $alpha: 0.1);
                 padding: 20px;
-            }
+                margin-bottom: 20px;
 
-            .btn-close {
-                color: #fff;
-                box-sizing: content-box;
-                width: 1em;
-                height: 1em;
-                background: red url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-                border: 0;
-                border-radius: .25rem;
-                opacity: .5;
-                padding: unset;
-                height: 30px;
-                width: 30px;
-                text-align: center;
-            }
+                .form-group:last-child {
+                    margin-bottom: 0;
+                }
 
-            .btn-edit {
-                padding: unset;
-                height: 30px;
-                width: 30px;
-                text-align: center;
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                .information-box {
+                    width: 100%;
+                    height: auto;
+                    background-color: rgba($color: #000000, $alpha: 0.01);
+                    border: 1px dotted rgba($color: #000000, $alpha: 0.1);
+                    padding: 20px;
+
+                    .p-calendar {
+                        width: 100%;
+
+                        .p-inputtext {
+                            height: 40px;
+                        }
+
+                        .p-button.p-button-icon-only {
+                            height: 40px;
+                            width: 40px !important;
+                        }
+                    }
+
+                    input[type="radio"] {
+                        margin: 0;
+                        width: 20px;
+                        height: 20px;
+                        margin-right: 10px;
+                    }
+                }
+
+                .form-edit-password {
+                    margin-bottom: 20px;
+                }
+
+                .btn-close {
+                    color: #fff;
+                    box-sizing: content-box;
+                    width: 1em;
+                    height: 1em;
+                    background: red
+                        url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e")
+                        center/1em auto no-repeat;
+                    border: 0;
+                    border-radius: 0.25rem;
+                    opacity: 0.5;
+                    padding: unset;
+                    height: 30px;
+                    width: 30px;
+                    text-align: center;
+                }
+
+                .btn-edit {
+                    padding: unset;
+                    height: 30px;
+                    width: 30px;
+                    text-align: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .img-qr-code-box {
+                    margin-top: 1.5rem;
+                    width: 180px;
+                    height: 180px;
+                    border: 1px dashed #0795df;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+
+                    .qr-code-hidden {
+                        background-color: #ccc;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        button {
+                            border: unset;
+                            outline: unset;
+                            color: #0795df;
+                            background-color: unset;
+                            font-size: 1.2rem;
+
+                            &:focus {
+                                border: unset;
+                                outline: unset;
+                            }
+                        }
+                    }
+
+                    img {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                    }
+
+                    .btn-close {
+                        position: absolute;
+                        right: -30px;
+                        top: -5px;
+                        box-sizing: content-box;
+                        width: 1em;
+                        height: 1em;
+                        padding: 0.25em 0.25em;
+                        color: #000;
+                        background: transparent
+                            url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='red'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e")
+                            center/1em auto no-repeat;
+                        border: 0;
+                        border-radius: 0.25rem;
+                        opacity: 0.5;
+                    }
+                }
             }
         }
     }
-
-    
 }

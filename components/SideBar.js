@@ -46,7 +46,34 @@ const SideBar = () => {
                             <li><a href="tables.html" className=""><i className="lnr lnr-list" aria-hidden></i> <span>Quản lí đơn đặt hàng</span></a></li>
                             <li><Link href="/delivery-setting"><a href="tables.html" className={classNames({ "active": activeLink('/shipping')})}><i className="lnr lnr-car"></i> <span>Cài đặt vận chuyển</span></a></Link></li>
                             <li><a href="tables.html" className=""><i className="lnr lnr-chart-bars"></i> <span>Thống kê</span></a></li>
-                            <li><Link href="/shop/update-information"><a href="tables.html" className={classNames({ "active": activeLink('/shop/update-information')})}><i className="lnr lnr-store"></i> <span>Quản lí cửa hàng</span></a></Link></li>
+                            <li>
+                                <a href="#shop" data-toggle="collapse" className="collapsed"><i className="lnr lnr-store"></i> <span>Quản lí cửa hàng</span> <i className="icon-submenu lnr lnr-chevron-right"></i></a>
+                                <div id="shop" className="collapse ">
+                                    <ul className="nav">
+                                        <li>
+                                            <Link href="/shop/rating-information">
+                                                <a className={classNames({ "active": activeLink("/shop/rating-information") })}>
+                                                    Đánh giá shop
+                                                </a>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/shop/decorate">
+                                                <a className={classNames({ "active": activeLink('/shop/decorate') })}>
+                                                    Trang trí shop
+                                                </a>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link href="/shop/update-information">
+                                                <a className={classNames({ "active": activeLink('/shop/update-information') })}>
+                                                    Cập nhật thông tin shop
+                                                </a>
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                             <li><a href="tables.html" className=""><i className="lnr lnr-bubble"></i> <span>Chăm sóc khách hàng</span></a></li>
                         </ul>
                     </nav>

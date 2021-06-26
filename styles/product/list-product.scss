@@ -18,7 +18,7 @@
 
         .form-group {
             .p-calendar {
-                height: 34px;
+                height: 40px;
                 width: 100%;
 
                 .p-inputtext {
@@ -28,12 +28,15 @@
 
                 .p-button.p-button-icon-only {
                     width: 40px;
+                    height: 40px;
                 }
             }
+
+            
         }
 
         .table-list-product {
-            margin-top: 40px;
+            margin-top: 20px;
 
             .btn {
                 padding: 4px 8px;

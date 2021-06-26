@@ -11,6 +11,10 @@ const url = {
         postVerify: () => `${baseUrl}/api/seller/verify`,
         postSignin: () => `${baseUrl}/api/seller/login`,
         postValidate: () => `${baseUrl}/api/seller/validate`,
+        getProfile: () => `${baseUrl}/api/seller/profile`,
+        updateProfile: () => `${baseUrl}/api/seller/updateProfile`,
+        updatePassword: () => `${baseUrl}/api/seller/changePassword`,
+        updateStatus2FA: () => `${baseUrl}/api/seller/secure`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
@@ -38,6 +42,10 @@ const url = {
         getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
         getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
     },
+    shop: {
+        changeInfoStore: () => `${baseUrl}/api/store/changeInforStore`,
+        getInfoStore: () => `${baseUrl}/api/store/detailShop`
+    }
 }
 
 export default url;

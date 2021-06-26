@@ -2,8 +2,7 @@ import Head from 'next/head';
 import { Dropdown } from 'primereact/dropdown';
 import LoadingBar from "react-top-loading-bar";
 import { useEffect, useRef, useState } from 'react';
-import Switch from "react-input-switch";
-import { Button } from '@material-ui/core';
+import { InputSwitch } from 'primereact/inputswitch';
 import api from './../../utils/backend-api.utils';
 import * as common from './../../utils/common.utils';
 import cookie from "cookie";
@@ -11,9 +10,9 @@ import cookie from "cookie";
 const ShippingSetting = ({ provinces, settings }) => {
     const refLoadingBar = useRef(null);
 
-    const [activeGHN, setActiveGHN] = useState(0);
-    const [activeGHTK, setActiveGHTK] = useState(0);
-    const [activeLocal, setActiveLocal] = useState(0);
+    const [activeGHN, setActiveGHN] = useState(false);
+    const [activeGHTK, setActiveGHTK] = useState(false);
+    const [activeLocal, setActiveLocal] = useState(false);
 
     const [province, setProvince] = useState(null);
     const [districts, setDistricts] = useState([]);
@@ -111,12 +110,12 @@ const ShippingSetting = ({ provinces, settings }) => {
                             ward_code: ward.WardCode,
                             name: ward.WardName
                         },
-                        isChoose: activeGHN === 1 ? true : false,
+                        isChoose: activeGHN,
                         street: street
                     }
                     :
                     {
-                        isChoose: activeGHN === 1 ? true : false,
+                        isChoose: activeGHN
                     }
             } else {
                 return;
@@ -154,12 +153,12 @@ const ShippingSetting = ({ provinces, settings }) => {
                         pick_province: provinceGHTK.ProvinceName,
                         pick_district: districtGHTK.DistrictName,
                         pick_ward: wardGHTK.WardName,
-                        isChoose: activeGHTK === 1 ? true : false,
+                        isChoose: activeGHTK,
                         street: streetGHTK
                     }
                     :
                     {
-                        isChoose: activeGHTK === 1 ? true : false
+                        isChoose: activeGHTK
                     }
             } else {
                 return;
@@ -193,7 +192,7 @@ const ShippingSetting = ({ provinces, settings }) => {
             if (addressLocal) {
                 local = {
                     address: addressLocal,
-                    isChoose: activeLocal === 1 ? true : false
+                    isChoose: activeLocal
                 }
             } else {
                 return;
@@ -231,7 +230,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                     setDistrict(resDistrict.data.data.filter(x => x.DistrictID === settings.ghn.district.district_id)[0]);
                     setWard(resWard.data.data.filter(x => x.WardCode === settings.ghn.ward.ward_code)[0]);
                     setStreet(settings.ghn.street);
-                    setActiveGHN(settings.ghn.isChoose ? 1 : 0);
+                    setActiveGHN(settings.ghn.isChoose);
                 } catch (error) {
                     common.Toast(error, 'error');
                 }
@@ -244,7 +243,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                     setDistrictGHTK(settings.ghtk.pick_district);
                     setWardGHTK(settings.ghtk.pick_ward);
                     setStreetGHTK(settings.ghtk.street);
-                    setActiveGHTK(settings.ghtk.isChoose ? 1 : 0);
+                    setActiveGHTK(settings.ghtk.isChoose);
                 } catch (error) {
                     common.Toast(error, 'error');
                 }
@@ -253,7 +252,7 @@ const ShippingSetting = ({ provinces, settings }) => {
 
             if (settings.local) {
                 setAddressLocal(settings.local.address);
-                setActiveLocal(settings.local.isChoose ? 1 : 0);
+                setActiveLocal(settings.local.isChoose);
             }
         }
     }
@@ -277,26 +276,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                 <div className="shipping-setting-row">
                     <div className="setting-row-header">Giao hàng nhanh</div>
                     <div className="setting-row-container">
-                        <Switch
-                            id="active-ghn"
-                            onChange={setActiveGHN}
-                            value={activeGHN}
-                            styles={{
-                                track: {
-                                    backgroundColor: 'gray'
-                                },
-                                trackChecked: {
-                                    backgroundColor: '#00a23b'
-                                },
-                                button: {
-                                    backgroundColor: '#fff'
-                                },
-                                buttonChecked: {
-                                    backgroundColor: '#fff'
-                                }
-                            }}
-                        />
-
+                        <InputSwitch checked={activeGHN} onChange={() => setActiveGHN(!activeGHN)} />
                         {
                             disableGHN
                                 ?
@@ -416,25 +396,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                 <div className="shipping-setting-row">
                     <div className="setting-row-header">Giao hàng nhanh</div>
                     <div className="setting-row-container">
-                        <Switch
-                            id="active-ghtk"
-                            onChange={setActiveGHTK}
-                            value={activeGHTK}
-                            styles={{
-                                track: {
-                                    backgroundColor: 'gray'
-                                },
-                                trackChecked: {
-                                    backgroundColor: '#00a23b'
-                                },
-                                button: {
-                                    backgroundColor: '#fff'
-                                },
-                                buttonChecked: {
-                                    backgroundColor: '#fff'
-                                }
-                            }}
-                        />
+                        <InputSwitch checked={activeGHTK} onChange={() => setActiveGHTK(!activeGHTK)} />
                         {
                             disableGHTK
                                 ?
@@ -555,25 +517,7 @@ const ShippingSetting = ({ provinces, settings }) => {
                 <div className="shipping-setting-row">
                     <div className="setting-row-header">Nhận hàng tại shop:</div>
                     <div className="setting-row-container">
-                        <Switch
-                            id="active-ghn"
-                            onChange={setActiveLocal}
-                            value={activeLocal}
-                            styles={{
-                                track: {
-                                    backgroundColor: 'gray'
-                                },
-                                trackChecked: {
-                                    backgroundColor: '#00a23b'
-                                },
-                                button: {
-                                    backgroundColor: '#fff'
-                                },
-                                buttonChecked: {
-                                    backgroundColor: '#fff'
-                                }
-                            }}
-                        />
+                        <InputSwitch checked={activeLocal} onChange={() => setActiveLocal(!activeLocal)} />
                         <div className="setting-row">
                             <label className="row-title" htmlFor="address-local">Địa chỉ: </label>
                             <textarea

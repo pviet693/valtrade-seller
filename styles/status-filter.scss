@@ -1,0 +1,41 @@
+.status {
+    width: 90%;
+    height: auto;
+    margin: auto;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    box-shadow: 0px 1px 2px 0 rgb(0 0 0 / 20%);
+    opacity: 1;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-align: center;
+}
+
+.status--rejected {
+    background-color: #ffcdd2;
+    color: #c63737;
+}
+
+.status--approved {
+    background-color: #c8e6c9;
+    color: #256029;
+}
+
+.status--pending {
+    background-color: rgba(#ff6a00, 0.4);
+    color: #805b36;
+}
+
+.status--all {
+    background-color: #b3e5fc;
+    color: #23547b;
+}
+
+.p-dropdown-status {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}

@@ -48,8 +48,10 @@ const api = {
             }
             return axios.post(url.seller.postRegister(), body, newConfig);
         },
-        getQrCode: (id) => {
-            return axios.get(url.seller.getQrCode().replace(":id", id));
+        getQrCode: (id, tokenSeller = '') => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.seller.getQrCode().replace(":id", id));
+            }
         },
         postVerify: (body) => {
             return axios.post(url.seller.postVerify(), body);
@@ -59,10 +61,24 @@ const api = {
         },
         postValidate: (body) => {
             return axios.post(url.seller.postValidate(), body);
+        },
+        getProfile: (tokenServer = '') => {
+            if (isEnable(tokenServer)) {
+                return axios.get(url.seller.getProfile(), config);
+            }
+        },
+        updateProfile: (body) => {
+            return axios.put(url.seller.updateProfile(), body, config);
+        },
+        updatePassword: (body) => {
+            return axios.put(url.seller.updatePassword(), body, config);
+        },
+        updateStatus2FA: (body) => {
+            return axios.put(url.seller.updateStatus2FA(), body, config);
         }
     },
     product: {
-        getList: (tokenServer) => {
+        getList: (params, tokenServer = '') => {
             const newConfig = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,7 +86,35 @@ const api = {
                     Authorization: `Bearer ${token ? token : tokenServer}`,
                 },
             }
-            return axios.get(url.product.getList(), newConfig);
+            if (params) {
+                let param = {};
+                let queryDate = "";
+                let queryPrice = "";
+                param.limit = params.rows;
+                param.page = params.page + 1;
+
+                if (params.search) param.search = params.search.trim();
+                if (params.status) param.status = params.status;
+                if (params.category) param.categoryId = params.category;
+                if (params.dateFrom && filters.dateTo) {
+                    let start = new Date(filters.dateFrom);
+                    let end = new Date(filters.dateTox);
+                    start.setHours(0, 0, 0, 0);
+                    start.setDate(start.getDate() + 1);
+                    end.setHours(0, 0, 0, 0);
+                    end.setDate(end.getDate() + 2);
+                    queryDate = `&dateFilter=${start.toISOString()}&dateFilter=${end.toISOString()}`;
+                }
+                if (params.priceFrom && filters.priceTo) {
+                    queryPrice = `&listKey=${params.priceFrom}&listKey=${filters.priceTo}`;
+                }
+
+                const query = new URLSearchParams(param);
+
+                return axios.get(url.product.getList() + `?${query}${queryDate}${queryPrice}`, newConfig);
+            } else {
+                return axios.get(url.product.getList(), newConfig);
+            }
         },
         postCreate: (body) => {
             if (isEnable()) {
@@ -108,7 +152,7 @@ const api = {
         }
     },
     auction: {
-        getList: (tokenServer) => {
+        getList: (params, tokenServer = '') => {
             const newConfig = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,7 +160,36 @@ const api = {
                     Authorization: `Bearer ${token ? token : tokenServer}`,
                 },
             }
-            return axios.get(url.auction.getList(), newConfig);
+            
+            if (params) {
+                let param = {};
+                let queryDate = "";
+                let queryPrice = "";
+                param.limit = params.rows;
+                param.page = params.page + 1;
+
+                if (params.search) param.search = params.search.trim();
+                if (params.status) param.status = params.status;
+                if (params.category) param.categoryId = params.category;
+                if (params.dateFrom && filters.dateTo) {
+                    let start = new Date(filters.dateFrom);
+                    let end = new Date(filters.dateTox);
+                    start.setHours(0, 0, 0, 0);
+                    start.setDate(start.getDate() + 1);
+                    end.setHours(0, 0, 0, 0);
+                    end.setDate(end.getDate() + 2);
+                    queryDate = `&dateFilter=${start.toISOString()}&dateFilter=${end.toISOString()}`;
+                }
+                if (params.priceFrom && filters.priceTo) {
+                    queryPrice = `&listKey=${params.priceFrom}&listKey=${filters.priceTo}`;
+                }
+
+                const query = new URLSearchParams(param);
+
+                return axios.get(url.auction.getList() + `?${query}${queryDate}${queryPrice}`, newConfig);
+            } else {
+                return axios.get(url.auction.getList(), newConfig);
+            }
         },
         postCreate: (body) => {
             if (isEnable()) {
@@ -206,6 +279,16 @@ const api = {
             }
             return axios.get(url.ghn.getWard(), newConfig);
         },
+    },
+    shop: {
+        changeInfoStore: (body) => {
+            return axios.put(url.shop.changeInfoStore(), body, config);
+        },
+        getInfoStore: (tokenSeller = '') => {
+            if (isEnable(tokenSeller)) {
+                return axios.get(url.shop.getInfoStore(), config);
+            }
+        }
     }
 };
 

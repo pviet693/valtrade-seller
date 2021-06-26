@@ -1,5 +1,9 @@
 import Swal from 'sweetalert2';
 
+export function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 export const Toast = (message, type, timer = 1500) => {
     const Toast = Swal.mixin({
         toast: true,

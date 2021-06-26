@@ -8,6 +8,7 @@ import api from './../utils/backend-api.utils';
 import * as validate from './../utils/validate.utils';
 import * as common from './../utils/common.utils';
 import { AuthModel } from './../models/login.model';
+import Cookie from 'js-cookie';
 
 export default function SignIn() {
 
@@ -45,8 +46,13 @@ export default function SignIn() {
                     common.Toast("Email không tồn tại", 'error')
                     setLoading(false);
                     refLoadingBar.current.complete();
-                } 
-                else {
+                } else if (res.data.code === 201) {
+                    common.Toast('Đăng nhập thành công.', 'success')
+                        .then(() => {
+                            Cookie.set('seller_token', res.data.token, { path: '/', expires: 1 });
+                            router.push('/product');
+                        });
+                } else {
                     const message = res.data.message || "Đăng nhập thất bại.";
                     common.Toast(message, 'error')
                     setLoading(false);

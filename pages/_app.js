@@ -19,6 +19,7 @@ import '../styles/auction/auction-detail.scss';
 import '../styles/delivery-setting.scss';
 import '../styles/update-information-shop.scss';
 import '../styles/profile.scss';
+import '../styles/status-filter.scss';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { DataProvider } from '../store/GlobalState';

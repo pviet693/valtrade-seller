@@ -56,7 +56,7 @@ const Verify = (props) => {
     return (
         <>
             <Head>
-                <title>Xác thực email</title>
+                <title>Cài đặt xác thực</title>
             </Head>
             <LoadingBar color="#00ac96" ref={refLoadingBar} />
             <div className="verify-email">
@@ -68,7 +68,7 @@ const Verify = (props) => {
                             </div>
                         </div>
                         <div className="col-md-6">
-                            <h3 className="verify-text">Xác thực Email</h3>
+                            <h3 className="verify-text">Cài đặt xác thực</h3>
                             <div className="instruction-step-verify">
                                 <h5 className="step-verify-title">Các bước thực hiện: </h5>
                                 <ol>
@@ -115,15 +115,18 @@ const Verify = (props) => {
                                         </div>
                                     }
                                 </div>
-
-                                {
-                                    !isLoading &&
-                                    <button type="submit" className="btn btn-class mt-2">Xác thực</button>
-                                }
-                                {
-                                    isLoading &&
-                                    <button type="button" className="btn btn-class mt-2" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
-                                }
+                                
+                                <div className="d-flex align-items-center">
+                                    {
+                                        !isLoading &&
+                                        <button type="submit" className="btn btn-primary mt-2">Xác thực</button>
+                                    }
+                                    {
+                                        isLoading &&
+                                        <button type="button" className="btn btn-primary mt-2" disabled="disabled"><i className="fa fa-spinner fa-spin mr-2" aria-hidden></i>Xử lí...</button>
+                                    }
+                                    <div type="submit" className="btn btn-class mt-2 ml-4" onClick={() => router.push("/profile")}>Trở về</div>
+                                </div>
                             </form>
                         </div>
                     </div>

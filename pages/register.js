@@ -212,28 +212,10 @@ const Register = () => {
                                     </div>
                                 }
                             </div>
-                        </div>
+                        </div>  
 
                         <div className="form-group row align-items-center d-flex">
-                            <label htmlFor="nameShop" className="col-md-3 col-form-label">Tên shop</label>
-                            <div className="col-md-9">
-                                <input type="text" 
-                                    className={classNames("form-control", { "is-invalid": validate.checkEmptyInput(register.nameShop) && showError })}
-                                    id="nameShop" placeholder="Tên shop" 
-                                    name="nameShop" onChange={onChangeInput} value={register.nameShop} />
-
-                                {
-                                    validate.checkEmptyInput(register.nameShop) && showError &&
-                                    <div className="invalid-feedback">
-                                        Tên shop không được trống.
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-
-                        <div className="form-group row align-items-center d-flex">
-                            <label htmlFor="password" className="col-md-3 col-form-label">Password</label>
+                            <label htmlFor="password" className="col-md-3 col-form-label">Mật khẩu</label>
                             <div className="col-md-9">
                                 <input type="password" 
                                     className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(register.password) || !validate.validatePassword(register.password)) && showError })}
@@ -253,6 +235,38 @@ const Register = () => {
                                 }
                             </div>
                         </div>
+
+                        <div className="form-group row align-items-center d-flex">
+                            <label htmlFor="confirmPassword" className="col-md-3 col-form-label">Xác nhận mật khẩu</label>
+                            <div className="col-md-9">
+                                <input type="password"
+                                    className={classNames("form-control", { "is-invalid": (validate.checkEmptyInput(register.confirmPassword) || !validate.validatePassword(register.confirmPassword) || (register.confirmPassword !== register.password)) && showError })}
+                                    id="confirmPassword" placeholder="Mật khẩu"
+                                    name="confirmPassword" onChange={onChangeInput} value={register.confirmPassword} />
+                                {
+                                    validate.checkEmptyInput(register.password) && showError &&
+                                    <div className="invalid-feedback">
+                                        Mật khẩu không được trống.
+                                    </div>
+                                }
+                                {
+                                    !validate.validatePassword(register.password) && showError &&
+                                    <div className="invalid-feedback">
+                                        Mật khẩu không hợp lệ.
+                                    </div>
+                                }
+                                {
+                                    (!validate.checkEmptyInput(register.password)
+                                        && register.password !== register.confirmPassword
+                                        && validate.validatePassword(register.password)
+                                    ) && showError &&
+                                    <div className="invalid-feedback">
+                                        Mật khẩu không được trống.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
                         <div className="form-group row align-items-center d-flex">
                             <label htmlFor="email" className="col-md-3 col-form-label">Email</label>
                             <div className="col-md-9">
@@ -301,6 +315,23 @@ const Register = () => {
                                     validate.checkEmptyInput(register.birthday) && showError &&
                                     <div className="invalid-feedback">
                                         Ngày sinh không được trống.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div className="form-group row align-items-center d-flex">
+                            <label htmlFor="nameShop" className="col-md-3 col-form-label">Tên shop</label>
+                            <div className="col-md-9">
+                                <input type="text"
+                                    className={classNames("form-control", { "is-invalid": validate.checkEmptyInput(register.nameShop) && showError })}
+                                    id="nameShop" placeholder="Tên shop"
+                                    name="nameShop" onChange={onChangeInput} value={register.nameShop} />
+
+                                {
+                                    validate.checkEmptyInput(register.nameShop) && showError &&
+                                    <div className="invalid-feedback">
+                                        Tên shop không được trống.
                                     </div>
                                 }
                             </div>

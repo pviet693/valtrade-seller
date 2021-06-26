@@ -7,6 +7,7 @@ export class RegisterModel {
         this.address = "";
         this.birthday = "";
         this.password = "";
+        this.confirmPassword = "";
         this.arrayImage = [];
     }
 }
