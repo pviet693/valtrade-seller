@@ -26,7 +26,7 @@ const AuctionDetail = (props) => {
     const [isDeleteLoading, setDeleteLoading] = useState(false);
     const [attributes, setAttributes] = useState(attr);
     const [propertyDefault, setPropertyDefault] = useState(product);
-    const [information, setInformation] = useState(info);
+    const [information, setInformation] = useState(JSON.parse(info));
     const inputCoverImage = useRef(null);
     const image1 = useRef(null);
     const image2 = useRef(null);

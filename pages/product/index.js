@@ -36,6 +36,7 @@ const Product = (props) => {
         rows: 10,
         page: 0,
     });
+    const [count, setCount] = useState(0);
 
     const dt = useRef(null);
     const refLoadingBar = useRef(null);
@@ -134,7 +135,12 @@ const Product = (props) => {
     }
 
     useEffect(async () => {
-        getListProduct();
+        if (count) {
+            getListProduct();
+        }
+        let newCount = count;
+        newCount += 1;
+        setCount(newCount);
     }, [lazyParams]);
 
     const getListProduct = async () => {
