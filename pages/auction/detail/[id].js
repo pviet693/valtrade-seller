@@ -1211,7 +1211,6 @@ export async function getServerSideProps(ctx) {
                     })
 
                     const resProduct = await api.auction.getDetail(id, token);
-                    console.log(resProduct);
                     if (resProduct.status === 200) {
                         if (resProduct.data.code === 200) {
                             const result = resProduct.data.result;
