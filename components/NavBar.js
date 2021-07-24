@@ -32,26 +32,26 @@ const NavBar = () => {
                     </form>
                     <div id="navbar-menu">
                         <ul className="nav navbar-nav navbar-right">
-                            <li className="dropdown">
+                            {/* <li className="dropdown">
                                 <a href="#" className="dropdown-toggle icon-menu" data-toggle="dropdown">
                                     <i className="lnr lnr-alarm"></i>
                                     <span className="badge bg-danger">5</span>
                                 </a>
-                                <ul className="dropdown-menu notifications" style={{ height: '200px', background: '#fff' }}>
+                                <ul className="dropdown-menu notifications" style={{ height: '200px', background: '#fff' }}> */}
                                     {/* <li><a href="#" className="notification-item"><span className="dot bg-warning"></span>System space is almost full</a></li>
                                     <li><a href="#" className="notification-item"><span className="dot bg-danger"></span>You have 9 unfinished tasks</a></li>
                                     <li><a href="#" className="notification-item"><span className="dot bg-success"></span>Monthly report is available</a></li>
                                     <li><a href="#" className="notification-item"><span className="dot bg-warning"></span>Weekly meeting in 1 hour</a></li>
                                     <li><a href="#" className="notification-item"><span className="dot bg-success"></span>Your request has been approved</a></li>
                                     <li><a href="#" className="more">See all notifications</a></li> */}
-                                </ul>
-                            </li>
+                                {/* </ul>
+                            </li> */}
                             <li className="dropdown">
                                 <a href="#" className="dropdown-toggle" data-toggle="dropdown"><img src="/static/assets/img/user.png" className="img-circle" alt="Avatar" /> <span>PhamViet693</span> <i className="icon-submenu lnr lnr-chevron-down"></i></a>
                                 <ul className="dropdown-menu">
                                     <li><a href="/profile"><i className="lnr lnr-user"></i> <span>Tài khoản của tôi</span></a></li>
-                                    <li><a href="#"><i className="lnr lnr-envelope"></i> <span>Tin nhắn</span></a></li>
-                                    <li><a href="#"><i className="lnr lnr-cog"></i> <span>Cài đặt</span></a></li>
+                                    {/* <li><a href="#"><i className="lnr lnr-envelope"></i> <span>Tin nhắn</span></a></li>
+                                    <li><a href="#"><i className="lnr lnr-cog"></i> <span>Cài đặt</span></a></li> */}
                                     <li onClick={logout}><a href="#"><i className="lnr lnr-exit"></i> <span>Đăng xuất</span></a></li>
                                 </ul>
                             </li>
