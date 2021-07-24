@@ -43,8 +43,8 @@ const SideBar = () => {
                                     </ul>
                                 </div>
                             </li>
-                            <li><a href="tables.html" className=""><i className="lnr lnr-list" aria-hidden></i> <span>Quản lí đơn đặt hàng</span></a></li>
-                            <li><Link href="/delivery-setting"><a href="tables.html" className={classNames({ "active": activeLink('/shipping')})}><i className="lnr lnr-car"></i> <span>Cài đặt vận chuyển</span></a></Link></li>
+                            <li><Link href="/order"><a className={classNames({ "active": activeLink('/order') })}><i className="lnr lnr-list" aria-hidden></i> <span>Quản lí đơn đặt hàng</span></a></Link></li>
+                            <li><Link href="/delivery-setting"><a className={classNames({ "active": activeLink('/shipping')})}><i className="lnr lnr-car"></i> <span>Cài đặt vận chuyển</span></a></Link></li>
                             <li><a href="tables.html" className=""><i className="lnr lnr-chart-bars"></i> <span>Thống kê</span></a></li>
                             <li>
                                 <a href="#shop" data-toggle="collapse" className="collapsed"><i className="lnr lnr-store"></i> <span>Quản lí cửa hàng</span> <i className="icon-submenu lnr lnr-chevron-right"></i></a>

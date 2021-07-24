@@ -8,17 +8,17 @@ import { Button } from 'primereact/button';
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import LoadingBar from "react-top-loading-bar";
-import NoneFilter from '../../components/NoneFilter';
-import HeaderTable from '../../components/HeaderTable';
-import StatusFilter from '../../components/StatusFilter';
+import NoneFilter from '../components/NoneFilter';
+import HeaderTable from '../components/HeaderTable';
+import StatusFilter from '../components/StatusFilter';
 import cookie from "cookie";
-import api from '../../utils/backend-api.utils';
-import * as common from '../../utils/common.utils';
+import api from './../utils/backend-api.utils';
+import * as common from '../utils/common.utils';
 import { useFormik } from 'formik';
 import Moment from 'moment';
 Moment.locale('en');
 
-const ProductReport = (props) => {
+const Order = (props) => {
     const router = useRouter();
     const [listStatus] = useState([
         { name: "Tất cả", value: "" },
@@ -259,22 +259,59 @@ const ProductReport = (props) => {
                             </div>
 
                             <div className="form-group row align-items-center d-flex">
-                                <label className="col-sm-2 col-form-label">Lý do vi phạm</label>
-                                <div className="col-sm-6">
-                                    <input type="text"
-                                        className="form-control"
-                                        name="search"
-                                        id="search"
-                                        placeholder="Lý do vi phạm"
-                                        value={formikFilter.values.search}
+                                <label htmlFor="status" className="col-sm-2 col-form-label">Trạng thái</label>
+                                <div className="col-sm-6 d-flex align-items-center">
+                                    <Dropdown
+                                        name="status"
+                                        id="status"
+                                        options={listStatus}
+                                        filter
+                                        itemTemplate={itemTemplate}
+                                        placeholder="Tất cả"
+                                        className="p-column-filter p-dropdown-status"
+                                        optionValue="value"
+                                        optionLabel="name"
+                                        value={formikFilter.values.status}
                                         onChange={formikFilter.handleChange}
                                     />
                                 </div>
-                                <div className="col-sm-4">
-                                    <input type="reset" className="btn btn-default w-25" value="Nhập lại" />
-                                </div>
                             </div>
 
+                            <div className="form-group row align-items-center d-flex">
+                                <label className="col-sm-2 col-form-label">Ngày đặt</label>
+                                <div className="col-sm-6 d-flex align-items-center">
+                                    <div className="col-sm-6 d-flex align-items-center pl-0">
+                                        <label className="mr-2 font-weight-normal">Từ: </label>
+                                        <Calendar
+                                            name="dateFrom"
+                                            dateFormat="dd/mm/yy"
+                                            showIcon
+                                            placeholder="Nhập ngày"
+                                            readOnlyInput
+                                            value={formikFilter.values.dateFrom}
+                                            onChange={formikFilter.handleChange}
+                                        />
+                                    </div>
+                                    <div className="col-sm-6 d-flex align-items-center pr-0">
+                                        <label className="mr-2 font-weight-normal">Đến: </label>
+                                        <Calendar
+                                            name="dateTo"
+                                            dateFormat="dd/mm/yy"
+                                            showIcon
+                                            placeholder="Nhập ngày"
+                                            readOnlyInput
+                                            value={formikFilter.values.dateTo}
+                                            onChange={formikFilter.handleChange}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-sm-4 d-flex align-items-center">
+                                    {
+                                        formikFilter.errors.date &&
+                                        <small className="invalid-feedback">{formikFilter.errors.date}</small>
+                                    }
+                                </div>
+                            </div>
                         </form>
 
                         <div className="table-list-product">
@@ -290,10 +327,12 @@ const ProductReport = (props) => {
                                 loading={loading}
                                 emptyMessage="Không có kết quả"
                             >
+                                <Column field="idOrder" header="Mã đơn" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
                                 <Column field="name" header="Tên sản phẩm" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
-                                <Column field="date" header="Ngày tố cáo" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
-                                <Column field="reason" header="Lý do" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
-                                <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={NoneFilter()} filter filterMatchMode="custom" />
+                                <Column field="date" header="Ngày đặt" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
+                                <Column field="price" header="Tổng tiền" sortable filterElement={NoneFilter()} filter filterMatchMode="custom"></Column>
+                                <Column field="statusOrder" header="Trạng thái"/>
+                                {/* <Column field="action" header="Hành động" body={actionBodyTemplate} headerStyle={{ width: '15em', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} filterElement={NoneFilter()} filter filterMatchMode="custom" /> */}
                             </DataTable>
                         </div>
                     </div>
@@ -334,13 +373,6 @@ export async function getServerSideProps(ctx) {
                             product.price = item.price ? `VNĐ ${common.numberWithCommas(item.price)}` : "";
                             product.accept = item.accept || false;
                             product.reject = item.reject || false;
-                            if (index === 0) {
-                                product.reason = "Sản phẩm không đúng chất lượng";
-                            } else if (index > 0 && index < 8) {
-                                product.reason = "Hàng giả hàng nhái";
-                            } else {
-                                product.statusOrder = "Sản phẩm cấm";
-                            }
                             products.push(product);
                         })
                     }
@@ -381,4 +413,4 @@ export async function getServerSideProps(ctx) {
     }
 }
 
-export default ProductReport;
+export default Order;
