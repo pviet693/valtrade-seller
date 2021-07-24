@@ -17,8 +17,8 @@ const NavBar = () => {
     return (
         <>
             <nav className="navbar navbar-default navbar-fixed-top">
-                <div className="brand">
-                    <Link href="/product"><a><img src="/static/assets/img/logo-dark.png" alt="Logo" className="img-responsive logo" /></a></Link>
+                <div className="brand pb-0 pl-4 pt-4">
+                    <Link href="/product"><a><img src="/static/assets/img/logo.jpg" alt="Logo" className="img-responsive logo" height="70" width="220" /></a></Link>
                 </div>
                 <div className="container-fluid">
                     <div className="navbar-btn">

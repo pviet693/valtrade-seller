@@ -58,13 +58,6 @@ const SideBar = () => {
                                             </Link>
                                         </li>
                                         <li>
-                                            <Link href="/shop/decorate">
-                                                <a className={classNames({ "active": activeLink('/shop/decorate') })}>
-                                                    Trang trí shop
-                                                </a>
-                                            </Link>
-                                        </li>
-                                        <li>
                                             <Link href="/shop/update-information">
                                                 <a className={classNames({ "active": activeLink('/shop/update-information') })}>
                                                     Cập nhật thông tin shop

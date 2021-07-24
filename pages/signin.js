@@ -86,7 +86,7 @@ export default function SignIn() {
                             <div className="left">
                                 <div className="content">
                                     <div className="header">
-                                        <div className="logo text-center"><img src="/static/assets/img/logo-dark.png" alt="Logo" /></div>
+                                        <div className="logo text-center"><img src="/static/assets/img/logo.jpg" alt="Logo" width="200" height="60" /></div>
                                         <p className="lead">Đăng nhập vào tài khoản của bạn</p>
                                     </div>
                                     <form className="form-auth-small" onSubmit={login}>
