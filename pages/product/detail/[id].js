@@ -26,7 +26,12 @@ const ProductDetail = (props) => {
     const [isDeleteLoading, setDeleteLoading] = useState(false);
     const [attributes, setAttributes] = useState(attr);
     const [propertyDefault, setPropertyDefault] = useState(product);
-    const [information, setInformation] = useState(JSON.parse(info));
+    const [information, setInformation] = useState(() => {
+        if (typeof info === "string") {
+            return JSON.parse(info);
+        }
+        return info;
+    });
     const inputCoverImage = useRef(null);
     const image1 = useRef(null);
     const image2 = useRef(null);
