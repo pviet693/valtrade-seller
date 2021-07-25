@@ -54,7 +54,7 @@ const Profile = () => {
     }
 
     const getProfile = async () => {
-
+        
     }
 
     const changeDisableInput = () =>{

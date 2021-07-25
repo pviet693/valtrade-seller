@@ -77,7 +77,6 @@ const ProductDetail = (props) => {
 
         try {
             const res = await api.category.getDetail(value.id);
-
             refLoadingBar.current.complete();
 
             if (res.status === 200) {
@@ -540,6 +539,7 @@ const ProductDetail = (props) => {
         })
         return num >= 4;
     }
+
 
     return (
         <div className="product-detail">
@@ -1070,14 +1070,14 @@ const ProductDetail = (props) => {
 
                             {
                                 attributes.map(x => {
+                                    let infor = JSON.parse(information);
                                     return (
-
                                         <div className="form-group row align-items-center d-flex" key={x.key}>
                                             <label htmlFor={x.key} className="col-sm-2 col-form-label">{`${x.name}:`}</label>
                                             <div className="col-sm-6">
                                                 <input
                                                     className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(information[x.key]) && showError })}
-                                                    value={information[x.key] || ""}
+                                                    value={infor[x.key] || ""}
                                                     placeholder={`${x.name}`} type="text" name={x.key} id={x.key} onChange={onChangeInformation} />
                                                 {
                                                     validate.checkEmptyInput(information[x.key]) && showError &&
