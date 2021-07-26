@@ -45,6 +45,12 @@ const url = {
     shop: {
         changeInfoStore: () => `${baseUrl}/api/store/changeInforStore`,
         getInfoStore: () => `${baseUrl}/api/store/detailShop`
+    },
+    chat: {
+        sendMessage: () => `${baseUrl}/api/message/sendMessage`,
+        getListMessage: () => `${baseUrl}/api/message/getListMessage`,
+        updateMessage: () => `${baseUrl}/api/message/updateMessage`,
+        getListConversation: () => `${baseUrl}/api/message/getListConversation`
     }
 }
 

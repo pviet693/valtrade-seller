@@ -289,6 +289,20 @@ const api = {
                 return axios.get(url.shop.getInfoStore(), config);
             }
         }
+    },
+    chat: {
+        postMessage: (body) => {
+            return axios.post(url.chat.sendMessage(), body, config);
+        },
+        getListMessage: (userId) => {
+            return axios.get(url.chat.getListMessage() + `?userId=${userId}`, config);
+        },
+        updateMessage: () => {
+            return axios.get(url.chat.updateMessage(), config);
+        },
+        getListConversation: () => {
+            return axios.get(url.chat.getListConversation(), config);
+        }
     }
 };
 
