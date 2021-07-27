@@ -3087,3 +3087,7 @@ label.fancy-checkbox {
 .p-datatable-scrollable-body {
   max-height: 500px !important;
 }
+
+.rce-avatar-container .rce-avatar {
+  object-fit: cover;
+}

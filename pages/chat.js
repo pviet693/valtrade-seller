@@ -12,6 +12,7 @@ import { ChatList } from 'react-chat-elements';
 import Message from "../components/Message";
 import { DataContext } from '../store/GlobalState';
 import _ from "lodash";
+import { v4 as uuidv4 } from "uuid";
 
 const Chat = ({ shopInfo }) => {
     const { state, socket} = useContext(DataContext);
@@ -61,9 +62,9 @@ const Chat = ({ shopInfo }) => {
                     message: {
                         messageText: res.message,
                         createdAt: res.time,
-                        imageUrl: "/static/avatar-person.svg"
+                        imageUrl: "/static/assets/img/avatar-person.svg"
                     },
-                    isMyMessage: res.typeFrom === "Buyer"
+                    isMyMessage: res.typeFrom === "Seller"
                 }])
             });
         }
@@ -76,30 +77,43 @@ const Chat = ({ shopInfo }) => {
         const { imageUrl } = fromId;
         if (imageUrl) {
             const { url } = imageUrl;
-            return url || "/static/avatar-person.svg";
+            return url || "/static/assets/img/avatar-person.svg";
         };
 
-        return "/static/avatar-person.svg";
+        return "/static/assets/img/avatar-person.svg";
     };
 
     const getListConversation = async () => {
         try {
             const response = await api.chat.getListConversation();
-            console.log(response);
+            console.log(response.data.result);
             if (response.data.code === 200) {
                 const { result } = response.data;
                 const conversations = [];
                 result.forEach((conversation, index) => {
+                    const { recipients } = conversation;
+                    const { from, to } = recipients;
+                    const { fromId } = from;
+                    const { toId } = to;
+                    let title = "";
+                    if (from.actors === "Buyer") {
+                        title = fromId.name;
+                    } else {
+                        title = toId.name;
+                    }
                     if (index === 0) {
-                        const { recipients } = conversation;
-                        const { to } = recipients;
-                        const { toId } = to;
-                        setChatUserId(toId._id);
+                        if (from.actors === "Buyer") {
+                            setChatUserId(fromId._id);
+                        } else {
+                            setChatUserId(toId._id);
+                        }
                     }
                     conversations.push({
+                        fromUserId: "",
+                        toUserId: "",
                         avatar: getAvatar(conversation),
                         alt: "avatar",
-                        title: conversation.recipients.from.fromId.name || "",
+                        title,
                         subtitle: conversation.lastMessage,
                         dateString: conversation.date,
                         unread: conversation.count,
@@ -117,6 +131,7 @@ const Chat = ({ shopInfo }) => {
     const getListMessage = async (chatUserId) => {
         try {
             const response = await api.chat.getListMessage(chatUserId);
+            console.log(response.data);
             if (response.data.code === 200) {
                 const { result } = response.data;
                 const messages = [];
@@ -127,9 +142,9 @@ const Chat = ({ shopInfo }) => {
                         message: {
                             messageText: body,
                             createdAt: date,
-                            imageUrl: "/static/avatar-person.svg"
+                            imageUrl: "/static/assets/img/avatar-person.svg"
                         },
-                        isMyMessage: typeTo === "Buyer"
+                        isMyMessage: typeTo === "Seller"
                     })
                 });
                 setListMessage(messages);
@@ -142,15 +157,15 @@ const Chat = ({ shopInfo }) => {
     };
 
     useEffect(() => {
-        // if (!_.isEmpty(auth)) {
+        if (!_.isEmpty(auth)) {
             getListConversation();
-        // }
+        }
     }, [auth]);
 
     useEffect(() => {
-        // if (chatUserId) {
-        getListMessage("60817365be8a2f0cba7f7640");
-        // }
+        if (chatUserId) {
+            getListMessage(chatUserId);
+        }
     }, [chatUserId]);
 
     return (
