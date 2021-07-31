@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import Moment from "moment";
 
 export function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
@@ -43,6 +44,10 @@ export const ConfirmDialog = (title, text) => {
     })
 
     return swal.fire({})
+}
+
+export function formatTimeChat(date) {
+    return Moment(new Date(date)).format("DD/MM/yyyy HH:mm:ss A");
 }
 
 //

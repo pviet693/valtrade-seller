@@ -297,8 +297,11 @@ const api = {
         getListMessage: (userId) => {
             return axios.get(url.chat.getListMessage() + `?userId=${userId}`, config);
         },
-        updateMessage: () => {
-            return axios.get(url.chat.updateMessage(), config);
+        updateMessage: (toUserId) => {
+            const body = {
+                to: toUserId
+            }
+            return axios.post(url.chat.updateMessage(), body, config);
         },
         getListConversation: () => {
             return axios.get(url.chat.getListConversation(), config);
