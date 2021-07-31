@@ -1,0 +1,110 @@
+.message-row {
+    display: grid;
+    grid-template-columns: 70%;
+    margin-bottom: 5px;
+
+    > .message-content {
+        display: grid;
+
+        > img {
+            border-radius: 100%;
+            grid-row: span 2;
+            width: 48px;
+            height: 48px;
+        }
+
+        > .message-time {
+            font-size: 0.65rem;
+            color: rgba(#000, 0.5);
+        }
+
+        > .message-text {
+            padding: 10px;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+    }
+
+    &.you-message {
+        justify-content: end;
+
+        > .message-content {
+            justify-items: end;
+
+            > .message-text {
+                background: #0795df;
+                color: #fff;
+                border: 1px solid #0795df;
+                border-radius: 14px 14px 0 14px;
+            }
+        }
+    }
+
+    &.other-message {
+        justify-items: start;
+
+        > .message-content {
+            grid-template-columns: 48px 1fr;
+            grid-column-gap: 15px;
+
+            > .message-text {
+                background: #eee;
+                color: #111;
+                border: 1px solid rgba(#eee, 13.18);
+                border-radius: 14px 14px 14px 0;
+            }
+        }
+    }
+}
+
+.chat-form {
+    display: flex;
+    align-items: center;
+    grid-area: chat-form;
+    border-radius: 0 0 10px 0;
+    border-top: 1px solid rgba(#eee, 12.16%);
+    width: 100%;
+    padding: 10px;
+
+    input {
+        flex: 1 0 0;
+        flex-basis: 90%;
+        outline: none;
+        border: 2px solid #eee;
+        color: rgba(#0795df, 24%);;
+        border-radius: 20px;
+        font-size: 1rem;
+        height: 40px;
+        background-color: #eee;
+        border: unset;
+
+        &:focus {
+            background-color: #eee;
+            border: unset;
+            box-shadow: unset;
+        }
+    }
+
+    button {
+        height: 40px;
+        flex-basis: 6%;
+        border-radius: 50%;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        height: 40px;
+        padding: 0;
+        text-align: right;
+
+        img {
+            width: 40px;
+            height: 40px;
+            object-fit: fill;
+        }
+        &:focus, &:hover {
+            border: unset;
+            box-shadow: unset;
+            color: #fff;
+        }
+    }
+}

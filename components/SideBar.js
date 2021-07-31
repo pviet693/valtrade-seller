@@ -67,7 +67,14 @@ const SideBar = () => {
                                     </ul>
                                 </div>
                             </li>
-                            <li><a href="tables.html" className=""><i className="lnr lnr-bubble"></i> <span>Chăm sóc khách hàng</span></a></li>
+                            <li>
+                                <Link href="/chat">
+                                    <a className={classNames({ "active": activeLink('/chat') })}>
+                                        <i className="lnr lnr-list" aria-hidden></i>
+                                        <span>Chăm sóc khách hàng</span>
+                                    </a>
+                                </Link>
+                            </li>
                         </ul>
                     </nav>
                 </div>

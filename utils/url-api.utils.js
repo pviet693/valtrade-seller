@@ -55,6 +55,12 @@ const url = {
         getListOrder: () => `${baseUrl}/api/order/getBySeller`,
         getOrderDetail: () => `${baseUrl}/api/order/detail/:orderId`,
         approveOrder: (id) => `${baseUrl}/api/order/approOrder`,
+    },
+    chat: {
+        sendMessage: () => `${baseUrl}/api/message/sendMessage`,
+        getListMessage: () => `${baseUrl}/api/message/getListMessage`,
+        updateMessage: () => `${baseUrl}/api/message/updateMessage`,
+        getListConversation: () => `${baseUrl}/api/message/getListConversation`
     }
 }
 

@@ -315,6 +315,20 @@ const api = {
         appoveOrder: (id) => {
             return axios.put(url.order.approveOrder(), {id:id}, config);
         }
+    },
+    chat: {
+        postMessage: (body) => {
+            return axios.post(url.chat.sendMessage(), body, config);
+        },
+        getListMessage: (userId) => {
+            return axios.get(url.chat.getListMessage() + `?userId=${userId}`, config);
+        },
+        updateMessage: () => {
+            return axios.get(url.chat.updateMessage(), config);
+        },
+        getListConversation: () => {
+            return axios.get(url.chat.getListConversation(), config);
+        }
     }
 };
 
