@@ -128,8 +128,9 @@ const Chat = ({ shopInfo }) => {
                 const { result } = response.data;
                 const messages = [];
                 result.forEach((message) => {
-                    const { to, body, date } = message;
-                    const { typeTo, idTo } = to;
+                    const { from, to, body, date } = message;
+                    const { idTo } = to;
+                    const { typeTo } = from;
                     const { imageUrl } = idTo;
                     messages.push({
                         message: {
@@ -180,19 +181,11 @@ const Chat = ({ shopInfo }) => {
                     );
                     setListConversation(newConversation);
                 } else {
-                    common.ToastPrime("Lỗi",
-                        response.data.message,
-                        "error",
-                        toast
-                    );
+                    common.Toast(response.data.message, "error");
                 }
             }
         } catch (error) {
-            common.ToastPrime("Lỗi",
-                error.response ? error.response.data.message : error.message,
-                "error",
-                toast
-            );
+            common.Toast(error.response ? error.response.data.message : error.message, "error");
         }
     }
 
@@ -217,19 +210,11 @@ const Chat = ({ shopInfo }) => {
                         );
                         setListConversation(newConversation);
                     } else {
-                        common.ToastPrime("Lỗi",
-                            response.data.message,
-                            "error",
-                            toast
-                        );
+                        common.Toast(response.data.message, "error");
                     }
                 }
             } catch (error) {
-                common.ToastPrime("Lỗi",
-                    error.response ? error.response.data.message : error.message,
-                    "error",
-                    toast
-                );
+                common.Toast(error.response ? error.response.data.message : error.message, "error");
             }
         }
     }
