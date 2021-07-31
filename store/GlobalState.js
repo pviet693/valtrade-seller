@@ -17,29 +17,6 @@ export const DataProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducers, initialState);
 
     useEffect(() => {
-        // if (Cookie.get("admin_token")) {
-            // dispatch({ type: 'LOADING', payload: { loading: true } });
-            // const token = Cookie.get("admin_token");
-            // axios.get("https://valtrade-api.herokuapp.com/api/buyer/profile", {
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`
-            //     }
-            // }).then(res => {
-            //     let user = {};
-            //     if (res.status === 200) {
-            //         user = res.data.information;
-            //     }
-            //     dispatch({
-            //         type: 'AUTH', payload: {
-            //             token: token,
-            //             user: user
-            //         }
-            //     });
-            //     dispatch({ type: 'LOADING', payload: {} });
-            // })
-        // } else {
-            // router.push('signin');
-        // }
     }, [])
 
     return (

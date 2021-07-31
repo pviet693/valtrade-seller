@@ -1,0 +1,89 @@
+.order-list-container {
+    width: 100%;
+    height: 100%;
+    padding: 28px 25px;
+
+    .order-list-title {
+        font-size: 1.4rem;
+        color: #566374;
+        font-weight: 500;
+        height: 80px;
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .order-list-content {
+        color: #000;
+        background: #fff;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+        font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+        height: auto;
+        width: 100%;
+        padding: 20px;
+
+        .order-list-table {
+            width: 100%;
+            height: 100%;
+
+            .p-calendar.p-component {
+                padding: unset !important;
+            }
+
+            .p-datatable-scrollable-body {
+                max-height: 400px !important;
+            }
+
+            .p-datatable-header {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+
+                .p-component {
+                    width: unset;
+                }
+            }
+
+            .btn {
+                padding: 4px 8px;
+            }
+
+            .datatable-doc-demo .p-paginator .p-paginator-current {
+                margin-left: auto;
+            }
+
+            .p-component {
+                font-size: 1.1rem;
+                width: 100%;
+                padding: 6px 8px;
+            }
+
+            .p-datatable-tbody {
+                tr {
+                    &:hover {
+                        background-color: #f9f9f9;
+                    }
+                }
+            }
+            
+            .accept{
+                background: #2DDB68 !important;
+                border: none !important;
+                border-radius: 25px !important;   
+                color: #fff !important;   
+                width: 150px !important;
+                height: 40px;
+            }
+            
+            .waitAccept{
+                background: #ff6a00 !important;
+                border: none !important;
+                border-radius: 25px !important;
+                color: #fff !important; 
+                width: 150px !important;  
+                height: 40px;
+            }
+        }
+    }
+}

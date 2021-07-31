@@ -1,4 +1,4 @@
-const baseUrl = "http://3.142.207.62:5000";
+export const baseUrl = "https://valtrade-api.tech";
 
 const url = {
     category: {
@@ -11,6 +11,10 @@ const url = {
         postVerify: () => `${baseUrl}/api/seller/verify`,
         postSignin: () => `${baseUrl}/api/seller/login`,
         postValidate: () => `${baseUrl}/api/seller/validate`,
+        getProfile: () => `${baseUrl}/api/seller/profile`,
+        updateProfile: () => `${baseUrl}/api/seller/updateProfile`,
+        updatePassword: () => `${baseUrl}/api/seller/changePassword`,
+        updateStatus2FA: () => `${baseUrl}/api/seller/secure`,
     },
     product: {
         postCreate: () => `${baseUrl}/api/product/create`,
@@ -18,6 +22,7 @@ const url = {
         delete: () => `${baseUrl}/api/product/delete/:id`,
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
+        // getListReport: () => `${baseUrl}/api/report/`
     },
     auction: {
         postCreate: () => `${baseUrl}/api/bid/createBid`,
@@ -38,6 +43,19 @@ const url = {
         getWard: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward",
         getDistrict: () => "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district"
     },
+    shop: {
+        changeInfoStore: () => `${baseUrl}/api/store/changeInforStore`,
+        getInfoStore: () => `${baseUrl}/api/store/detailShop`
+    },
+    transfer: {
+        postTransfer: () => `${baseUrl}/api/transfer/createTransfer`,
+        getListTransfer: () => `${baseUrl}/api/transfer/getListTransfer`
+    },
+    order: {
+        getListOrder: () => `${baseUrl}/api/order/getBySeller`,
+        getOrderDetail: () => `${baseUrl}/api/order/detail/:orderId`,
+        approveOrder: (id) => `${baseUrl}/api/order/approOrder`,
+    }
 }
 
 export default url;

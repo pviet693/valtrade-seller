@@ -26,7 +26,12 @@ const AuctionDetail = (props) => {
     const [isDeleteLoading, setDeleteLoading] = useState(false);
     const [attributes, setAttributes] = useState(attr);
     const [propertyDefault, setPropertyDefault] = useState(product);
-    const [information, setInformation] = useState(info);
+    const [information, setInformation] = useState(() => {
+        if (typeof info === "string") {
+            return JSON.parse(info);
+        }
+        return info;
+    });
     const inputCoverImage = useRef(null);
     const image1 = useRef(null);
     const image2 = useRef(null);
@@ -220,7 +225,7 @@ const AuctionDetail = (props) => {
                 formData.append("image", images.image7);
             if (images.image8)
                 formData.append("image", images.image8);
-            formData.append("information", JSON.stringify(information))
+            formData.append("information", JSON.stringify(information));
 
             const res = await api.auction.putUpdate(formData, propertyDefault.id);
 
@@ -566,6 +571,13 @@ const AuctionDetail = (props) => {
                 </div>
                 <hr />
 
+                {
+                    product.reason &&
+                    <div className="alert alert-danger alert-dismissible" role="alert">
+                        <i className="fa fa-times-circle mr-3" aria-hidden></i>
+                        Lý dó bị từ chối: {product.reason}
+                    </div>
+                }
                 <div className="form-input">
                     <div className="form-group row align-items-center d-flex">
                         <label htmlFor="name" className="col-sm-2 col-form-label">Tên sản phẩm: </label>
@@ -1041,7 +1053,7 @@ const AuctionDetail = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="form-group row">
+                            {/* <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Video: </label>
                                 <div className="d-flex flex-row flex-wrap align-items-center">
                                     <div className="d-flex flex-column add-video-container">
@@ -1060,7 +1072,7 @@ const AuctionDetail = (props) => {
                                         <p>3. Định dạng: MP4</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển: </label>
                                 <div className="col-sm-6">
@@ -1227,6 +1239,7 @@ export async function getServerSideProps(ctx) {
                             product.width = result.width || 0;
                             product.height = result.height || 0;
                             product.countDown = result.countDown || 0;
+                            product.reason = result.reason || "";
                             result.deliverArray.forEach(x => {
                                 if (x.ghn) deliverArr["ghn"] = x.ghn;
                                 if (x.ghtk) deliverArr["ghtk"] = x.ghtk;

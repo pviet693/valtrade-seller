@@ -1,5 +1,10 @@
 import Swal from 'sweetalert2';
 
+export function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+
 export const Toast = (message, type, timer = 1500) => {
     const Toast = Swal.mixin({
         toast: true,
@@ -43,6 +48,7 @@ export const ConfirmDialog = (title, text) => {
 
 //
 export const KeyEncrypt = "2CE59986EC4F959F77E3EFD967B00FF689C469EC1013A561";
+
 
 // api ghn
 export const tokenGHN = "c76acf0e-9a1d-11eb-8be2-c21e19fc6803";

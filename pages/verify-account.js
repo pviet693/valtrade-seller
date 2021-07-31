@@ -37,7 +37,7 @@ const VerifyAccount = (props) => {
                 if (res.data.code === 200) {
                     common.Toast('Xác thực thành công.', 'success')
                         .then(() => {
-                            Cookie.set('seller_token', res.data.token, { path: '/', expires: 30 });
+                            Cookie.set('seller_token', res.data.token, { path: '/', expires: 1 });
                             router.push('/product');
                         });
                 } else {

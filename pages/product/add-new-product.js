@@ -956,7 +956,7 @@ const AddNewProduct = (props) => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="form-group row">
+                            {/* <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Video: </label>
                                 <div className="d-flex flex-row flex-wrap align-items-center">
                                     <div className="d-flex flex-column add-video-container">
@@ -975,7 +975,7 @@ const AddNewProduct = (props) => {
                                         <p>3. Định dạng: MP4</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="form-group row">
                                 <label htmlFor="name-product" className="col-sm-2 col-form-label">Cài đặt vận chuyển*: </label>
                                 <div className="col-sm-6">
