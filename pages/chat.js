@@ -165,6 +165,7 @@ const Chat = ({ shopInfo }) => {
     const onClickConversation = async (conversation) => {
         try {
             const { toUserId, unread } = conversation;
+            setChatUserId(toUserId);
             if (unread) {
                 const response = await api.chat.updateMessage(toUserId);
                 if (response.data.code === 200) {
