@@ -1,0 +1,82 @@
+.report-detail-container {
+    width: 100%;
+    height: 100%;
+    padding: 28px 25px;
+
+    .report-detail-title {
+        font-size: 1.4rem;
+        color: #566374;
+        font-weight: 500;
+        height: 80px;
+        margin: 0 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        i {
+            font-size: 1em;
+        }
+        
+        div {
+            margin-bottom: 2px;
+        }
+    }
+
+    .report-detail-content {
+        color: #000;
+        background: #fff;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+        font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif;
+        height: auto;
+        width: 100%;
+        padding: 20px;
+        font-size: 14px;
+
+        .form-group {
+            .p-calendar {
+                height: 40px;
+                width: 100%;
+
+                .p-inputtext {
+                    font-size: 14px;
+                    padding: 6px 12px;
+                }
+
+                .p-button.p-button-icon-only {
+                    width: 40px;
+                }
+            }
+        }
+    }
+    
+}
+
+.report-detail-footer {
+    color: #000;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 16%);
+    height: 80px;
+    padding: 20px;
+    width: 100%;
+    justify-content: space-between;
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    button {
+      border-radius: 4px;
+    }
+  
+    .btn--back {
+      background-color: #fff;
+      color: #0795df;
+      width: 150px;
+      height: 40px;
+      border: 1px solid #0795df;
+  
+      &:focus {
+        border: 1px solid #0795df;
+      }
+    }
+  }
+

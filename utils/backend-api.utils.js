@@ -149,6 +149,12 @@ const api = {
                 }
                 return axios.put(url.product.putUpdate().replace(':id', id), body, newConfig);
             }
+        },
+        getListReport: () => {
+            return axios.get(url.product.getListReport(), config);
+        },
+        getDetailReport: (id) => {
+            return axios.get(url.product.getDetailReport().replace(':id', id), config);
         }
     },
     auction: {

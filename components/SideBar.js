@@ -39,7 +39,6 @@ const SideBar = () => {
                                     <ul className="nav">
                                         <li><Link href="/auction"><a className={classNames({ "active": activeLink('/auction') })}>Tất cả sản phẩm</a></Link></li>
                                         <li><Link href="/auction/add-new-auction"><a className={classNames({ "active": activeLink('/auction/add-new-auction') })}>Thêm sản phẩm</a></Link></li>
-                                        <li><Link href="/auction/auction-report"><a className={classNames({ "active": activeLink('/auction/auction-report') })}>Sản phẩm vi phạm</a></Link></li>
                                     </ul>
                                 </div>
                             </li>

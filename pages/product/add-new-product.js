@@ -216,7 +216,7 @@ const AddNewProduct = (props) => {
                 formData.append("image", images.image7);
             if (images.image8)
                 formData.append("image", images.image8);
-            formData.append("information", JSON.stringify(information))
+            formData.append("information", JSON.stringify(information));
 
             const res = await api.product.postCreate(formData);
 

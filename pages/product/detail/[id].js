@@ -192,7 +192,6 @@ const ProductDetail = (props) => {
             if (ghtkChecked) delivery.push({ ghtk: props.settingShippingArray.ghtk });
             if (notDeliveryChecked) delivery.push({ local: props.settingShippingArray.local });
             formData.append("deliverArray", JSON.stringify(delivery));
-
             if (images.coverImage)
                 formData.append("image", images.coverImage);
             if (images.image1)
@@ -213,6 +212,7 @@ const ProductDetail = (props) => {
                 formData.append("image", images.image8);
             
             formData.append("information", JSON.stringify(information));
+            console.log(information);
 
             const res = await api.product.putUpdate(formData, propertyDefault.id);
 
@@ -1082,14 +1082,13 @@ const ProductDetail = (props) => {
 
                             {
                                 attributes.map(x => {
-                                    let infor = JSON.parse(information);
                                     return (
                                         <div className="form-group row align-items-center d-flex" key={x.key}>
                                             <label htmlFor={x.key} className="col-sm-2 col-form-label">{`${x.name}:`}</label>
                                             <div className="col-sm-6">
                                                 <input
                                                     className={classNames("form-control", { 'is-invalid': validate.checkEmptyInput(information[x.key]) && showError })}
-                                                    value={infor[x.key] || ""}
+                                                    value={information[x.key] || ""}
                                                     placeholder={`${x.name}`} type="text" name={x.key} id={x.key} onChange={onChangeInformation} />
                                                 {
                                                     validate.checkEmptyInput(information[x.key]) && showError &&

@@ -118,8 +118,8 @@ const Product = (props) => {
                             if (res.data.code === 200) {
                                 common.Toast('Xóa sản phẩm thành công.', 'success')
                                     .then(() => {
-                                        let newListProducts = listProducts.filter(x => x.id !== id);
-                                        setListProducts([...newListProducts]);
+                                        let newListProducts = products.filter(x => x.id !== id);
+                                        setProducts([...newListProducts]);
                                     })
                             } else {
                                 const message = res.data.message || 'Xóa sản phẩm thất bại.';

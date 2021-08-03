@@ -22,7 +22,8 @@ const url = {
         delete: () => `${baseUrl}/api/product/delete/:id`,
         getDetail: () => `${baseUrl}/api/product/detail/:id`,
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
-        // getListReport: () => `${baseUrl}/api/report/`
+        getListReport: () => `${baseUrl}/api/report/getBySeller`,
+        getDetailReport: () => `${baseUrl}/api/report/detail/:id`,
     },
     auction: {
         postCreate: () => `${baseUrl}/api/bid/createBid`,

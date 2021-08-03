@@ -23,6 +23,7 @@ import '../styles/update-information-shop.scss';
 import '../styles/profile.scss';
 import '../styles/status-filter.scss';
 import '../styles/message.scss';
+import '../styles/report-detail.scss';
 import 'react-chat-elements/dist/main.css';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';

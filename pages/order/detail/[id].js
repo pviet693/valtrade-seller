@@ -22,7 +22,9 @@ const OrderDetail = (props) => {
         isAccept: false,
         date_order: "",
         phone_order: "",
-        address_order: ""
+        address_order: "",
+        payment: "",
+        shipType: ""
     });
     const [isLoadingDecline, setIsLoadingDecline] = useState(false);
     const [isLoadingAccept, setIsLoadingAccept] = useState(false);
@@ -35,7 +37,7 @@ const OrderDetail = (props) => {
     useEffect(async () => {
         try {
             const res = await api.order.getOrderDetail(id);
-            console.log(res);
+            console.log(Object.keys(res.data.result.inforOrder.shipType)[0]);
             if (res.status === 200) {
                 if (res.data.code === 200) {
                     let orderDetail = {
@@ -46,7 +48,9 @@ const OrderDetail = (props) => {
                         isAccept: false,
                         date_order: "",
                         phone_order: "",
-                        address_order: ""
+                        address_order: "",
+                        payment: "",
+                        shipType: ""
                     };
                     orderDetail.id = res.data.result._id || "";
                     orderDetail.orderer = res.data.result.inforOrder.nameRecei || "";
@@ -56,6 +60,8 @@ const OrderDetail = (props) => {
                     orderDetail.date_order = res.data.result.inforOrder.timeOrder ? Moment(res.data.result.inforOrder.timeOrder).format("DD/MM/yyyy") : "";
                     orderDetail.phone_order = res.data.result.inforOrder.contact || "";
                     orderDetail.address_order = res.data.result.inforOrder.addressOrder || "";
+                    orderDetail.payment = res.data.result.inforOrder.payment === 'vnpay' ? 'VNPAY' : (res.data.result.inforOrder.payment === 'paypal' ? 'Paypal' : 'Tiền mặt');
+                    orderDetail.shipType = Object.keys(res.data.result.inforOrder.shipType)[0] === 'ghn' ? 'Giao hàng nhanh' : (Object.keys(res.data.result.inforOrder.shipType)[0] === 'ghtk' ? 'Giao hàng tiết kiệm' : 'Nhận hàng tại shop') ,
                     setOrder(orderDetail);
                 }
             }
@@ -160,6 +166,18 @@ const OrderDetail = (props) => {
                                 <label htmlFor="stateOrder" className="col-md-3 col-form-label">Trạng thái đơn hàng</label>
                                 <div className="col-md-9">
                                     <input type="text" className="form-control" id="stateOrder" placeholder="Trạng thái" name="stateOrder" defaultValue={order.stateOrder} disabled/>
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="shipType" className="col-md-3 col-form-label">Đơn vị giao hàng</label>
+                                <div className="col-md-9">
+                                    <input type="text" className="form-control" id="shipType" placeholder="Đơn vị giao hàng" name="shipType" defaultValue={order.shipType} disabled/>
+                                </div>
+                            </div>
+                            <div className="form-group row align-items-center d-flex">
+                                <label htmlFor="payment" className="col-md-3 col-form-label">Phương thức thanh toán</label>
+                                <div className="col-md-9">
+                                    <input type="text" className="form-control" id="payment" placeholder="Phương thức thanh toán" name="payment" defaultValue={order.payment} disabled/>
                                 </div>
                             </div>
                         </div>
