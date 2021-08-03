@@ -13,6 +13,7 @@ import Message from "../components/Message";
 import { DataContext } from '../store/GlobalState';
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
+import { ChatItem } from 'react-chat-elements';
 
 const Chat = ({ shopInfo }) => {
     const { state, socket} = useContext(DataContext);
@@ -61,7 +62,7 @@ const Chat = ({ shopInfo }) => {
                 setListMessage((prevStates) => [...prevStates, {
                     message: {
                         messageText: res.message,
-                        createdAt: res.time,
+                        createdAt: common.formatTimeChat(new Date(res.time)),
                         imageUrl: "/static/assets/img/avatar-person.svg"
                     },
                     isMyMessage: res.typeFrom === "Seller"
@@ -72,9 +73,9 @@ const Chat = ({ shopInfo }) => {
 
     const getAvatar = (conversation) => {
         const { recipients } = conversation;
-        const { from } = recipients;
-        const { fromId } = from;
-        const { imageUrl } = fromId;
+        const { to } = recipients;
+        const { toId } = to;
+        const { imageUrl } = toId;
         if (imageUrl) {
             const { url } = imageUrl;
             return url || "/static/assets/img/avatar-person.svg";
@@ -86,40 +87,32 @@ const Chat = ({ shopInfo }) => {
     const getListConversation = async () => {
         try {
             const response = await api.chat.getListConversation();
-            console.log(response.data.result);
             if (response.data.code === 200) {
                 const { result } = response.data;
                 const conversations = [];
-                result.forEach((conversation, index) => {
+                result.forEach((conversation) => {
                     const { recipients } = conversation;
                     const { from, to } = recipients;
                     const { fromId } = from;
                     const { toId } = to;
-                    let title = "";
-                    if (from.actors === "Buyer") {
-                        title = fromId.name;
-                    } else {
-                        title = toId.name;
-                    }
-                    if (index === 0) {
-                        if (from.actors === "Buyer") {
-                            setChatUserId(fromId._id);
-                        } else {
-                            setChatUserId(toId._id);
-                        }
-                    }
+                    const checkSeller = from.actors === "Seller";
+                    let title = checkSeller ? toId.name : fromId.name;
+                    let fromUserId = checkSeller ? fromId._id : toId._id;
+                    let toUserId = checkSeller ? toId._id : fromId._id;
                     conversations.push({
-                        fromUserId: "",
-                        toUserId: "",
+                        fromUserId,
+                        toUserId,
                         avatar: getAvatar(conversation),
                         alt: "avatar",
                         title,
                         subtitle: conversation.lastMessage,
-                        dateString: conversation.date,
+                        dateString: common.formatTimeChat(new Date(conversation.date)),
                         unread: conversation.count,
+                        className: ""
                     })
                 });
                 setListConversation(conversations);
+                setChatUserId(conversations[0].toUserId);
             } else {
                 common.Toast(response.data.message, "error");
             }
@@ -131,18 +124,19 @@ const Chat = ({ shopInfo }) => {
     const getListMessage = async (chatUserId) => {
         try {
             const response = await api.chat.getListMessage(chatUserId);
-            console.log(response.data);
             if (response.data.code === 200) {
                 const { result } = response.data;
                 const messages = [];
                 result.forEach((message) => {
-                    const { from, body, date } = message;
+                    const { from, to, body, date } = message;
+                    const { idTo } = to;
                     const { typeTo } = from;
+                    const { imageUrl } = idTo;
                     messages.push({
                         message: {
                             messageText: body,
-                            createdAt: date,
-                            imageUrl: "/static/assets/img/avatar-person.svg"
+                            createdAt: common.formatTimeChat(new Date(date)),
+                            imageUrl: imageUrl ? (imageUrl.url || "/static/assets/img/avatar-person.svg") : "/static/assets/img/avatar-person.svg"
                         },
                         isMyMessage: typeTo === "Seller"
                     })
@@ -168,6 +162,63 @@ const Chat = ({ shopInfo }) => {
         }
     }, [chatUserId]);
 
+    const onClickConversation = async (conversation) => {
+        try {
+            const { toUserId, unread } = conversation;
+            if (unread) {
+                const response = await api.chat.updateMessage(toUserId);
+                if (response.data.code === 200) {
+                    const newConversation = listConversation.map(
+                        (conversation) => {
+                            if (conversation.toUserId === chatUserId) {
+                                return ({
+                                    ...conversation,
+                                    unread: 0
+                                });
+                            }
+                            return conversation;
+                        }
+                    );
+                    setListConversation(newConversation);
+                } else {
+                    common.Toast(response.data.message, "error");
+                }
+            }
+        } catch (error) {
+            common.Toast(error.response ? error.response.data.message : error.message, "error");
+        }
+    }
+
+    const updateMessage = async () => {
+        const conversation = listConversation.find((item) => item.toUserId === chatUserId);
+        if (conversation) {
+            try {
+                const { toUserId, unread } = conversation;
+                if (unread) {
+                    const response = await api.chat.updateMessage(toUserId);
+                    if (response.data.code === 200) {
+                        const newConversation = listConversation.map(
+                            (conversation) => {
+                                if (conversation.toUserId === chatUserId) {
+                                    return ({
+                                        ...conversation,
+                                        unread: 0
+                                    });
+                                }
+                                return conversation;
+                            }
+                        );
+                        setListConversation(newConversation);
+                    } else {
+                        common.Toast(response.data.message, "error");
+                    }
+                }
+            } catch (error) {
+                common.Toast(error.response ? error.response.data.message : error.message, "error");
+            }
+        }
+    }
+
     return (
         <div className="shop">
             <Head>
@@ -185,9 +236,21 @@ const Chat = ({ shopInfo }) => {
                             minHeight: 500
                         }}
                     >
-                        <ChatList
-                            className='chat-list'
-                            dataSource={listConversation} />
+                        {
+                            listConversation.map((conversation) => (
+                                <ChatItem
+                                    key={uuidv4()}
+                                    avatar={conversation.avatar}
+                                    alt={conversation.alt}
+                                    title={conversation.title}
+                                    subtitle={conversation.subtitle}
+                                    dateString={conversation.dateString}
+                                    unread={conversation.unread}
+                                    onClick={() => onClickConversation(conversation)}
+                                    className={conversation.className}
+                                />
+                            ))
+                        }
                     </div>
                     <div className="col-lg-8 px-0 h-100" style={{ position: "relative", minHeight: "500px" }}>
                         <div style={{ height: 440, overflow: "auto", padding: 10, marginBottom: 10 }}>
@@ -214,6 +277,7 @@ const Chat = ({ shopInfo }) => {
                                 placeholder="Nhập tin nhắn ở đây..."
                                 value={messageText}
                                 onChange={(e) => setMessageText(e.target.value)}
+                                onFocus={() => updateMessage()}
                             />
                             <button
                                 type="submit"
