@@ -32,7 +32,7 @@ const ReportDetail = (props) => {
                     const data = res.data.result;
                     let reportDetail = {};
                     reportDetail.name = data.reportId.name || "";
-                    reportDetail.link = `http://localhost:3002/product/detail/${data.reportId._id}`
+                    reportDetail.link = `https://valtrade-seller.me/product/detail/${data.reportId._id}`
                     reportDetail.reporter = data.reportId.sellerInfor.nameOwner || "";
                     reportDetail.poster = data.userReport.name || "";
                     reportDetail.content = data.content || "";
