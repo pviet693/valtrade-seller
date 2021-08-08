@@ -24,6 +24,7 @@ const url = {
         putUpdate: () => `${baseUrl}/api/product/update/:id`,
         getListReport: () => `${baseUrl}/api/report/getBySeller`,
         getDetailReport: () => `${baseUrl}/api/report/detail/:id`,
+        approvePrice: () => `${baseUrl}/api/product/approvePrice`
     },
     auction: {
         postCreate: () => `${baseUrl}/api/bid/createBid`,

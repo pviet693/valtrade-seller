@@ -155,6 +155,9 @@ const api = {
         },
         getDetailReport: (id) => {
             return axios.get(url.product.getDetailReport().replace(':id', id), config);
+        },
+        approvePrice: (body) => {
+            return axios.post(url.product.approvePrice(), body, config);
         }
     },
     auction: {

@@ -25,6 +25,10 @@
         .comment-row_content {
             width: 100%;
 
+            .MuiRating-label {
+                color: yellowgreen;
+            }
+
             .MuiRating-icon {
                 display: block;
             }

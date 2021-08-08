@@ -11,6 +11,7 @@ import cookie from "cookie";
 import { useRouter } from 'next/router';
 import { InputNumber } from 'primereact/inputnumber';
 import { Calendar } from 'primereact/calendar';
+import { Dialog } from "primereact/dialog";
 
 const ProductDetail = (props) => {
     const router = useRouter();
@@ -55,6 +56,48 @@ const ProductDetail = (props) => {
     })
     const inputVideo = useRef(null);
     const refLoadingBar = useRef(null);
+    const [showUpdatePrice, setShowUpdatePrice] = useState(true);
+    const [priceUpdate, setPriceUpdate] = useState(
+        propertyDefault.priceSuggest.length ?
+            propertyDefault.priceSuggest[0].value
+            : 0
+    );
+
+    const updatePrice = async () => {
+        try {
+            let body = {
+                productId: propertyDefault.id,
+                priceSuggest: priceUpdate
+            };
+
+            const response = await api.product.approvePrice(body);
+            if (response.status === 200) {
+                if (response.data.code === 200) {
+                    common.Toast("Cập nhật giá thành công", "success")
+                        .then(() => router.push('/product'));
+                } else {
+                    const message = response.data.message || "Cập nhật giá thất bại";
+                    common.Toast(message, "error");
+                }
+            }
+        } catch (error) {
+            common.Toast(error.message, "error");
+        }
+    };
+
+    const renderFooter = () => {
+        return (
+            <div>
+                <button
+                    label="Hủy bỏ"
+                    onClick={() => setShowUpdatePrice(false)}
+                    className="btn btn-danger"
+                    style={{}}
+                />
+                <button label="Cập nhật" onClick={() => updatePrice()} autoFocus className="btn btn-primary" />
+            </div>
+        );
+    }
 
     const changeInput = (e) => {
         const { value, name } = e.target;
@@ -210,7 +253,7 @@ const ProductDetail = (props) => {
                 formData.append("image", images.image7);
             if (images.image8)
                 formData.append("image", images.image8);
-            
+
             formData.append("information", JSON.stringify(information));
             console.log(information);
 
@@ -658,6 +701,27 @@ const ProductDetail = (props) => {
                                         </div>
                                     }
                                 </div>
+                                {
+                                    propertyDefault.priceSuggest.length > 0
+                                    && (
+                                        <>
+                                            <div className="col-sm-2">
+                                                <Dropdown value={priceUpdate} options={propertyDefault.priceSuggest}
+                                                    onChange={(e) => setPriceUpdate(e.value)}
+                                                    optionLabel="label"
+                                                    filter
+                                                    showClear
+                                                    filterBy="label"
+                                                    placeholder="Chọn giá" id="price-update"
+                                                    className="w-100"
+                                                />
+                                            </div>
+                                            <div className="col-sm-1">
+                                                <button className="btn btn-primary" onClick={() => updatePrice()}>Cập nhật</button>
+                                            </div>
+                                        </>
+                                    )
+                                }
                             </div>
                             <div className="form-group row align-items-center d-flex">
                                 <label htmlFor="oldPrice" className="col-sm-2 col-form-label">Giá mua ban đầu: </label>
@@ -1127,6 +1191,24 @@ const ProductDetail = (props) => {
                     }
                 </div>
             </div>
+            {/* <Dialog
+                header="Chọn giá"
+                visible={showUpdatePrice}
+                onHide={() => setShowUpdatePrice(false)}
+                breakpoints={{ '960px': '75vw' }}
+                style={{ width: '30vw' }}
+                footer={renderFooter()}
+            >
+                <label className="d-block">Chọn giá đề xuất</label>
+                <Dropdown value={priceUpdate} options={propertyDefault.priceSuggest}
+                    onChange={(e) => console.log(e)}
+                    optionLabel="label"
+                    filter
+                    showClear
+                    filterBy="label"
+                    placeholder="Chọn giá" id="price-update"
+                />
+            </Dialog> */}
         </div>
     );
 }
@@ -1207,6 +1289,15 @@ export async function getServerSideProps(ctx) {
                             product.width = result.width || 0;
                             product.height = result.height || 0;
                             product.reason = result.reason || "";
+                            product.priceSuggest = [];
+                            if (result.priceSuggest) {
+                                result.priceSuggest.forEach((item) => {
+                                    product.priceSuggest.push({
+                                        label: item,
+                                        value: item
+                                    })
+                                })
+                            }
                             result.deliverArray.forEach(x => {
                                 if (x.ghn) deliverArr["ghn"] = x.ghn;
                                 if (x.ghtk) deliverArr["ghtk"] = x.ghtk;
