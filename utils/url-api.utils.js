@@ -65,6 +65,9 @@ const url = {
     },
     rating: {
         getList: () => `${baseUrl}/api/comment/getCommentSeller`,
+    },
+    dashboard: {
+        getDashboard: () => `${baseUrl}/api/seller/dashboard`
     }
 }
 

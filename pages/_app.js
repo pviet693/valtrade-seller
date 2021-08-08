@@ -26,6 +26,10 @@ import '../styles/status-filter.scss';
 import '../styles/message.scss';
 import '../styles/report-detail.scss';
 import 'react-chat-elements/dist/main.css';
+import '../styles/badge.scss';
+import '../styles/status-card.scss';
+import '../styles/table.scss';
+import '../styles/home.scss';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import { DataProvider } from '../store/GlobalState';
@@ -34,7 +38,7 @@ import NProgress from 'nprogress'; //nprogress module
 import 'nprogress/nprogress.css'; //styles of nprogress
 
 //Binding events. 
-Router.events.on('routeChangeStart', () => NProgress.start()); 
+Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done()); 
 Router.events.on('routeChangeError', () => NProgress.done());
 

@@ -343,6 +343,13 @@ const api = {
         getList: () => {
             return axios.get(url.rating.getList(), config);
         }
+    },
+    dashboard: {
+        getDashboard: (token = '') => {
+            if (isEnable(token)) {
+                return axios.get(url.dashboard.getDashboard(), config);
+            }
+        }
     }
 };
 
