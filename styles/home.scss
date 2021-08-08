@@ -1,0 +1,32 @@
+.dashboard-container {
+    padding: 0 30px;
+
+    .card {
+        padding: 30px;
+        margin-bottom: 30px;
+        background-color: #fff;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        border-radius: 15px;
+    }
+
+    .full-height {
+        height: 100%;
+    }
+
+    .card.full-height {
+        height: calc(100% - 30px);
+    }
+
+    .card__header {
+        text-transform: capitalize;
+    }
+
+    .card > div ~ div {
+        margin-top: 30px;
+    }
+
+    .card__footer {
+        text-align: center;
+        text-transform: capitalize;
+    }
+}

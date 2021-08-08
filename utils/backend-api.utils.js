@@ -338,6 +338,13 @@ const api = {
         getListConversation: () => {
             return axios.get(url.chat.getListConversation(), config);
         }
+    },
+    dashboard: {
+        getDashboard: (token = '') => {
+            if (isEnable(token)) {
+                return axios.get(url.dashboard.getDashboard(), config);
+            }
+        }
     }
 };
 
