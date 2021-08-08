@@ -1,0 +1,123 @@
+.comment-container {
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgb(0 0 0 / 5%);
+    padding: 20px;
+    margin-bottom: 10px;
+    height: 100%;
+
+    .comment-row {
+        display: flex;
+        flex-direction: row;
+
+        .comment-row_img {
+            margin-right: 1rem;
+
+            img {
+                width: 40px;
+                height: 40px;
+                object-position: center;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 1px solid #D7D7D7;
+            }
+        }
+
+        .comment-row_content {
+            width: 100%;
+
+            .MuiRating-icon {
+                display: block;
+            }
+
+            .content_name {
+                font-weight: 500;
+                font-size: 1.1rem;
+                color: #686868;
+            }
+
+            .content_star {
+                color: #0795DF;
+                display: flex;
+                align-items: center;
+
+                i {
+                    margin-right: 0.5rem;
+                }
+            }
+
+            .content_comment {
+                margin-top: 15px;
+                font-size: 1rem;
+                color: #686868;
+            }
+
+            .content_img {
+                display: flex;
+                align-items: center;
+                max-width: 60%;
+                flex-wrap: wrap;
+                margin-top: 10px;
+
+                img {
+                    width: 80px;
+                    height: 80px;
+                    object-position: center;
+                    object-fit: cover;
+                    border: 1px solid #D7D7D7;
+                    margin-bottom: 10px;
+                    margin-right: 10px;
+                }
+            }
+
+            .btn--send-comment {
+                color: #fff;
+                background-color: #0795DF;
+                padding: 5px 20px;
+            }
+
+            .dialog-box {
+                &__body {
+                    position: relative;
+                    max-width: 500px;
+                    height: auto;
+                    padding: 5px;
+                    background-color: #fff;
+                    border-radius: 3px;
+                    border: 2px solid #0795DF;
+
+                    .tip {
+                        width: 0px;
+                        height: 0px;
+                        position: absolute;
+                        background: transparent;
+                        border: 10px solid #0795DF;
+                    }
+
+                    .tip-up {
+                        top: -22px;
+                        left: 6px;
+                        border-right-color: transparent;
+                        border-left-color: transparent;
+                        border-top-color: transparent;
+                    }
+
+                    .message {
+                        border-radius: 3px;
+                        font-family: Arial;
+                        font-size: 1em;
+                        line-height: 1.5;
+                        color: #797979;
+                    }
+                }
+            }
+
+            .comment-time {
+                display: flex;
+                max-width: 500px;
+                justify-content: flex-end;
+                font-size: 0.9em;
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

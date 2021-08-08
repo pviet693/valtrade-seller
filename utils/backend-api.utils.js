@@ -338,6 +338,11 @@ const api = {
         getListConversation: () => {
             return axios.get(url.chat.getListConversation(), config);
         }
+    },
+    rating: {
+        getList: () => {
+            return axios.get(url.rating.getList(), config);
+        }
     }
 };
 

@@ -62,6 +62,9 @@ const url = {
         getListMessage: () => `${baseUrl}/api/message/getListMessage`,
         updateMessage: () => `${baseUrl}/api/message/updateMessage`,
         getListConversation: () => `${baseUrl}/api/message/getListConversation`
+    },
+    rating: {
+        getList: () => `${baseUrl}/api/comment/getCommentSeller`,
     }
 }
 
