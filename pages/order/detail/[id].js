@@ -92,6 +92,10 @@ const OrderDetail = (props) => {
                                             }
                                         });
                             }
+                            else if (res.data.code === 300){
+                                const message = res.data.message;
+                                common.Toast(message, 'error');
+                            }
                         }
                     } catch(error) {
                         setIsLoadingAccept(false);
