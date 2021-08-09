@@ -71,7 +71,7 @@ const OrderDetail = (props) => {
     }, [])
 
     const acceptOrder = () => {
-        common.ConfirmDialog('Xác nhận', 'Bạn muốn phê duyệt đơn hàng này?')
+        common.ConfirmDialogOrder('Xác nhận', 'Bạn muốn phê duyệt đơn hàng này?')
             .then(async (result) => {
                 if (result.isConfirmed) {
                     setIsLoadingAccept(true);

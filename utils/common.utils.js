@@ -25,6 +25,28 @@ export const Toast = (message, type, timer = 1500) => {
     })
 }
 
+export const ConfirmDialogOrder = (title, text) => {
+    const swal = Swal.mixin({
+        title: title,
+        text: text,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy',
+        customClass: {
+            confirmButton: 'btn btn-swal-confirm',
+            cancelButton: 'btn btn-swal-cancel',
+            header: 'swal-header',
+            title: 'swal-title',
+            content: 'swal-content',
+        },
+        buttonsStyling: false
+    })
+
+    return swal.fire({})
+}
+
 export const ConfirmDialog = (title, text) => {
     const swal = Swal.mixin({
         title: title,
