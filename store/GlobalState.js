@@ -28,9 +28,13 @@ export const DataProvider = ({ children }) => {
         if (Cookie.get("seller_token")) {
             try {
                 const profileRes = await api.seller.getProfile();
+
                 let user = {};
                 if (profileRes.data.code === 200) {
                     user = profileRes.data.result;
+                } else {
+                    common.Toast("Get profile error.", "error");
+                    console.log(profileRes);
                 }
 
                 dispatch({ type: "AUTH", payload: { user } });
